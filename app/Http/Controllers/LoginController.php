@@ -43,8 +43,8 @@ class LoginController extends Controller
                 'name' => ['Invalid credentials.'],
             ]);
         }
-       //if user has 2fa enabled.
-        if ($user->two_factor_secret) {
+       //if user has 2fa enabled but not confirmed
+        if ($user->two_factor_secret && !$user->two_factor_confirmed_at) {
             // Generate a one-time code
             $request->session()->put('login_username', $user->name); //store username in session
             return redirect('/2fa'); //redirect to 2fa page
@@ -89,13 +89,10 @@ class LoginController extends Controller
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'two_factor_secret' => Google2FA::generateSecretKey(),
         ]);
 
-        //login the user
-        Auth::login($user);
-        //generate 2fa secret key.
-        $user->two_factor_secret = Google2FA::generateSecretKey();
-        $user->save();
+        
 
         //redirect to 2fa setup page.
         return redirect('/2fa/setup');
@@ -103,6 +100,9 @@ class LoginController extends Controller
 
     public function show2faForm()
     {
+        if (!session('login_username')) {
+            return redirect('/login');
+        }
         return view('auth.2fa');
     }
 
@@ -117,6 +117,7 @@ class LoginController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
+        $username = session('login_username');
         $user = User::where('name', session('login_username'))->first();
         $OTP = $request->input('one_time_password');
         //validate the one time password
@@ -125,6 +126,7 @@ class LoginController extends Controller
             $request->session()->put('2fa_confirmed', true);
             $user->two_factor_confirmed_at = now();
             $user->save();
+            $request->session()->forget('login_username'); //remove username from session
             return redirect()->intended('/dashboard');
         }
         else{
@@ -138,6 +140,9 @@ class LoginController extends Controller
      public function show2faSetupForm()
     {
         $user = Auth::user();
+        if ($user->two_factor_confirmed_at) {
+            return redirect('/dashboard');
+        }
         $QR_code = Google2FA::getQRCodeUrl(
             config('app.name'),
             $user->email,
@@ -159,7 +164,7 @@ class LoginController extends Controller
                 ->withInput();
         }
 
-        if (Google2FA::verifyKey($user->two_factor_secret,$request->one_time_password))
+        if (Google2FA::verifyKey($user->two_factor_secret, $request->one_time_password))
         {
             $user->two_factor_confirmed_at = now();
             $user->save();
