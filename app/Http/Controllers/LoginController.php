@@ -10,9 +10,20 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use PragmaRX\Google2FALaravel\Facade as Google2FA;
 use Illuminate\Validation\ValidationException;
+use App\Http\Controllers\Controller;
+
 
 class LoginController extends Controller
 {
+    public function __construct()
+    {
+        
+        $this->middleware('auth')->only([
+            'show2faSetupForm',
+            'post2faSetup'
+        ]);
+    }
+
         public function showLoginForm()
     {
        
@@ -45,8 +56,9 @@ class LoginController extends Controller
         }
        //if user has 2fa enabled but not confirmed
         if ($user->two_factor_secret && !$user->two_factor_confirmed_at) {
+            Auth::login($user);
             // Generate a one-time code
-            $request->session()->put('login_username', $user->name); //store username in session
+            $request->session()->put('2fa_passed', false); //store username in session
             return redirect('/2fa'); //redirect to 2fa page
         }
         // Authentication was successful
@@ -91,89 +103,13 @@ class LoginController extends Controller
             'password' => Hash::make($request->input('password')),
             'two_factor_secret' => Google2FA::generateSecretKey(),
         ]);
-
-        
+        Auth::login($user);
 
         //redirect to 2fa setup page.
-        return redirect('/2fa/setup');
+        return redirect('/2fa-setup');
     }
 
-    public function show2faForm()
-    {
-        if (!session('login_username')) {
-            return redirect('/login');
-        }
-        return view('auth.2fa');
-    }
+   
 
-    public function post2fa(Request $request)
-    {
-        $validator = Validator::make($request->all(),[
-            'one_time_password' => 'required|string|min:6|max:6',
-        ]);
-
-         if ($validator->fails()) {
-            return redirect('/2fa')
-                ->withErrors($validator)
-                ->withInput();
-        }
-        $username = session('login_username');
-        $user = User::where('name', session('login_username'))->first();
-        $OTP = $request->input('one_time_password');
-        //validate the one time password
-        if (Google2FA::verifyKey($user->two_factor_secret,$OTP))
-        {
-            $request->session()->put('2fa_confirmed', true);
-            $user->two_factor_confirmed_at = now();
-            $user->save();
-            $request->session()->forget('login_username'); //remove username from session
-            return redirect()->intended('/dashboard');
-        }
-        else{
-             throw ValidationException::withMessages([
-                'one_time_password' => ['Invalid one time password.'],
-            ]);
-        }
-
-    }
-
-     public function show2faSetupForm()
-    {
-        $user = Auth::user();
-        if ($user->two_factor_confirmed_at) {
-            return redirect('/dashboard');
-        }
-        $QR_code = Google2FA::getQRCodeUrl(
-            config('app.name'),
-            $user->email,
-            $user->two_factor_secret
-        );
-        return view('auth.2fa-setup', ['QR_code' => $QR_code]);
-    }
-
-    public function post2faSetup(Request $request)
-    {
-         $user = Auth::user();
-         $validator = Validator::make($request->all(),[
-            'one_time_password' => 'required|string|min:6|max:6',
-        ]);
-
-         if ($validator->fails()) {
-            return redirect('/2fa/setup')
-                ->withErrors($validator)
-                ->withInput();
-        }
-
-        if (Google2FA::verifyKey($user->two_factor_secret, $request->one_time_password))
-        {
-            $user->two_factor_confirmed_at = now();
-            $user->save();
-            return redirect('/dashboard');
-        }
-        else{
-            throw ValidationException::withMessages([
-                'one_time_password' => ['Invalid One Time Password'],
-            ]);
-        }
-    }
+   
 }

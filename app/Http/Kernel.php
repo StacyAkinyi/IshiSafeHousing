@@ -1,4 +1,5 @@
-protected $middlewareAliases = [
+protected $routeMiddleware = [
         //...
-        '2fa' => \App\Http\Middleware\Check2FA::class,
+        '2fa.setup' => \App\Http\Middleware\EnsureTwoFactorIsVerified::class,
+        '2fa.challenge' => \App\Http\Middleware\EnsureTwoFactorIsVerified::class,
     ];
