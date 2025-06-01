@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use PragmaRX\Google2FA\Laravel\Facade as Google2FA;
+use PragmaRX\Google2FALaravel\Facade as Google2FA;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
