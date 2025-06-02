@@ -17,7 +17,13 @@
         <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Welcome to Your Dashboard</h1>
         <p class="text-gray-700 mb-4">You are now logged in.</p>
         <p class="text-gray-700 mb-6">This is a placeholder for your dashboard content.  You could display user-specific information or links to other parts of the application here.</p>
-        <a href="/logout" class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline w-full transition duration-300 text-center">Logout</a>
+        <form method="POST" action="{{ route('logout') }}">
+          @csrf {{-- CSRF protection token --}}
+
+          {{-- You can style this button as needed --}}
+          <button type="submit">Logout</button>
+        </form>
+        
     </div>
     </body>
 </html>

@@ -25,8 +25,8 @@
                 </ul>
             </nav>
             <div class="flex space-x-4">
-                <a href="{{route('login')}}" class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-full transition duration-300">Login</a>
-                <a href="/register" class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-3 rounded-full transition duration-300">Register</a>
+                <a href="{{route('auth.login')}}" class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-full transition duration-300">Login</a>
+                <a href="{{route('auth.register')}}" class="bg-purple-500 hover:bg-purple-600 text-white px-5 py-3 rounded-full transition duration-300">Register</a>
             </div>
         </div>
     </header>
