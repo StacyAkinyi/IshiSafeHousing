@@ -13,7 +13,7 @@
     <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Reset Password</h1>
     <form method="POST" action="/reset-password">
         @csrf
-        <input type="hidden" name="token" value="{{ $token }}">
+        <input type="hidden" name="token" value="{{ request('token') }}">
 
         <label class="block text-gray-700 text-sm font-bold mb-2" for="email">Email</label>
         <input id="email" type="email" name="email" value="{{ old('email') }}" required class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 mb-4">
