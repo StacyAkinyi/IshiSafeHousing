@@ -50,6 +50,14 @@
                     Register
                 </a>
             </div>
+            @if(Route::has('password.request'))
+                <div class="text-center mt-2">
+                    <a href="{{ route('password.request') }}" class="inline-block text-sm text-blue-500 hover:text-blue-700 transition duration-300">
+                        Forgot Your Password?
+                    </a>
+                </div>
+                @endif
+           
         </form>
     </div>
 </body>
