@@ -18,6 +18,6 @@ Route::get('/', function () {
 });
 
 
-Route::view('/', 'dashboard')->middleware(['auth', 'verified']);
+Route::view('/dashboard', 'dashboard')->middleware(['auth', 'verified']);
 Route::view('/profile/edit', 'profile.edit')->middleware('auth');
 Route::view('/profile/password', 'profile.password')->middleware('auth');

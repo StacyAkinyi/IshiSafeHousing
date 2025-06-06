@@ -63,6 +63,7 @@ class RouteServiceProvider extends ServiceProvider
          RateLimiter::for('login', function (Request $request) {
 
         return Limit::perMinute(5)->by($request->input('email').'|'.$request->ip());
+         });
 
         RateLimiter::for('two-factor', function (Request $request) {
         $userId = null;
@@ -73,6 +74,6 @@ class RouteServiceProvider extends ServiceProvider
         return Limit::perMinute(5)->by($userId ?: $request->ip());
     });
         
-    });
+    
     }
 }

@@ -46,6 +46,7 @@
                       <div class="pb-5">
                                 {!! auth()->user()->twoFactorQrCodeSvg() !!}
                         </div>
+                       
 
                       <div>
                          <h3>Recovery Codes:</h3>

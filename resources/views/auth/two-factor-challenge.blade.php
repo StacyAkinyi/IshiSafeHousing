@@ -12,7 +12,7 @@
   <div class="bg-white/80 backdrop-blur-md rounded-xl shadow-lg p-8 w-full max-w-md">
     <h1 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Two-Factor Challenge</h1>
     <p class="text-gray-600 mb-4 text-center">Please confirm access to your account by entering the authentication code provided by your authenticator application.</p>
-    <form method="POST" action="/two-factor-challenge">
+    <form method="POST" action="{{ route('two-factor.login') }}">
       @csrf
 
       <label class="block text-gray-700 text-sm font-bold mb-2" for="code">Authentication Code</label>
