@@ -15,16 +15,7 @@ class LoginResponse implements LoginResponseContract
              return redirect()->intended('/two-factor-challenge');
         }
 
-        // Otherwise, redirect based on role.
-        $role = Auth::user()->role;
+        
 
-        switch ($role) {
-            case 'admin':
-                return redirect()->intended('/admin/dashboard');
-            case 'landlord/agent':
-                return redirect()->intended('/agent/dashboard');
-            default:
-                return redirect()->intended('/dashboard');
-        }
     }
 }

@@ -76,7 +76,7 @@
             <div class="mt-8 border-t pt-6">
                  <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <!-- Logout Button (Neutral/Outline Style) -->
+                    
                     <button type="submit" class="w-full sm:w-auto bg-slate-200 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-300 transition duration-200 border border-slate-300">
                         Logout
                     </button>

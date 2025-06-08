@@ -14,7 +14,7 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
         switch ($role) {
             case 'admin':
                 return redirect()->intended('/admin/dashboard');
-            case 'landlord/agent':
+            case 'agent':
                 return redirect()->intended('/agent/dashboard');
             default:
                 return redirect()->intended('/dashboard');

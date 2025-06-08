@@ -3,21 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Property;
+use App\Models\Appointment;
+use App\Models\Review;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash; // <-- Add this import for password hashing
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        
-        return view('admin.dashboard');
+        $users = User::all(); 
+        $properties = Property::all();
+        $appointments = Appointment::latest()->get(); // Get latest appointments
+        $reviews = Review::latest()->get();
+        // Fetches all users from the database
+        return view('admin.dashboard', ['users' => $users,  'properties' => $properties,
+            'appointments' => $appointments,
+            'reviews' => $reviews,]); // Pass the users to the view
     }
     public function manageUsers()
     {
-        $users = User::all(); // Fetches all users from the database
-        return view('admin.users', ['users' => $users]); // Pass the users to the view
+        $users = User::all();
+        return view('admin.users', ['users' => $users]);
     }
 
     /**
@@ -42,7 +52,7 @@ class AdminController extends Controller
         ]);
 
         // Redirect back to the user management page with a success message
-        return redirect()->route('admin.users')->with('success', 'User created successfully.');
+        return redirect()->route('admin.dashboard')->with('success', 'User created successfully.');
     }
 }
 
