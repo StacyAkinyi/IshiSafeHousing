@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -30,16 +31,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
-});
+    
+    });
 
 // Agent-specific routes.
 // This group requires the user to be logged in. You could add a custom 'agent'
 // middleware here later if needed, just like the 'admin' one.
 Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () {
-    Route::get('/dashboard', function() {
-        // Later, you will create an AgentController for this
-        return '<h1>Agent Dashboard</h1>';
-    })->name('dashboard');
+   Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
 });
 
 // Student-specific dashboard (this is the default dashboard).

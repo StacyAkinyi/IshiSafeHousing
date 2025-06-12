@@ -14,6 +14,7 @@ class LoginResponse implements LoginResponseContract
         if (Auth::user()->two_factor_secret) {
              return redirect()->intended('/two-factor-challenge');
         }
+        return redirect()->intended('/dashboard');
 
         
 

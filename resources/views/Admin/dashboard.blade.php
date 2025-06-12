@@ -42,7 +42,7 @@
                 </a>
                  <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="appointments">
                     <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    Appointments
+                    Bookings
                 </a>
                 <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="users">
                     <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -133,7 +133,7 @@
                             </span>
                         </td>
                         <td class="p-4 space-x-2">
-                            <button class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
+                            <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
                             <button class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
                         </td>
                     </tr>
@@ -147,11 +147,7 @@
     </div>
 </div>
 
-<!-- ====================================================================== -->
-<!--           Add User Modal (for admin_dashboard.blade.php)             -->
-<!-- ====================================================================== -->
 
-<!-- This modal is hidden by default and appears when "Add User" is clicked. -->
 <div id="addUserModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
         <!-- Modal Header -->
@@ -215,6 +211,45 @@
         </form>
     </div>
 </div>
+            <!-- EDIT USER MODAL -->
+<div id="editUserModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+  <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+    <div class="flex justify-between items-center p-6 border-b">
+      <h2 class="text-2xl font-semibold">Edit User</h2>
+      <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+    </div>
+
+    <form id="editUserForm" method="POST" class="p-6">
+      <input type="hidden" name="_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="_method" value="PUT">
+
+      <div class="space-y-4">
+        <div>
+          <label for="edit_name" class="block text-sm font-medium text-slate-700">Name</label>
+          <input type="text" name="name" id="edit_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm">
+        </div>
+        <div>
+          <label for="edit_email" class="block text-sm font-medium text-slate-700">Email</label>
+          <input type="email" name="email" id="edit_email" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm">
+        </div>
+        <div>
+          <label for="edit_role" class="block text-sm font-medium text-slate-700">Role</label>
+          <select name="role" id="edit_role" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm">
+            <option value="student">Student</option>
+            <option value="agent">Agent</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end items-center pt-6 mt-4 border-t">
+        <button type="button" onclick="closeEditModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 border mr-2">Cancel</button>
+        <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700">Update User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 
             <!-- Reviews Section -->
             <div id="reviews" class="content-section hidden">
@@ -260,8 +295,31 @@
             });
         });
     });
+      window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.edit-user-btn').forEach(button => {
+            button.addEventListener('click', () => {
+            const user = JSON.parse(button.dataset.user);
+            openEditModal(user);
+            });
+        });
+    });
+      function openEditModal(user) {
+        const modal = document.getElementById('editUserModal');
+        document.getElementById('edit_name').value = user.name;
+        document.getElementById('edit_email').value = user.email;
+        document.getElementById('edit_role').value = user.role;
+        document.getElementById('editUserForm').action = `/admin/users/${user.id}`;
+        modal.classList.remove('hidden');
+        modal.classList.add('opacity-100');
+        }
 
-    // Modal open/close functions (already in your template, but repeating for clarity)
+        function closeEditModal() {
+        const modal = document.getElementById('editUserModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('opacity-100');
+        }
+
+    
     function openModal() {
         document.getElementById('addUserModal').classList.remove('hidden');
         document.getElementById('addUserModal').classList.add('opacity-100');
