@@ -80,31 +80,76 @@
              <div id="properties" class="content-section hidden">
                  <div class="flex justify-between items-center mb-8">
                     <h1 class="text-3xl font-semibold text-slate-800">Manage Properties</h1>
-                    <button id="open-property-modal-btn" class="bg-indigo-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-600 transition duration-200 shadow-sm flex items-center">
+                    <button onclick="openPropModal()" class="bg-indigo-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-600 transition duration-200 shadow-sm flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         Add Property
                     </button>
                 </div>
 
-                <div id="properties-table-container" class="bg-white rounded-xl shadow-md overflow-x-auto">
-                    </div>
-                </div>
+              <div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <table class="min-w-full text-left">
+        <thead class="bg-slate-50 border-b">
+            <tr>
+                <th class="p-4 text-sm font-semibold text-slate-600">ID</th>
+                <th class="p-4 text-sm font-semibold text-slate-600">Property Name</th>
+                <th class="p-4 text-sm font-semibold text-slate-600">Type</th>
+                <th class="p-4 text-sm font-semibold text-slate-600">City</th>
+                <th class="p-4 text-sm font-semibold text-slate-600">Status</th>
+                <th class="p-4 text-sm font-semibold text-slate-600">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse ($properties as $property)
+                <tr class="border-b hover:bg-slate-50 transition">
+                    <td class="p-4 text-slate-800">{{ $property->id }}</td>
+                    <td class="p-4 text-slate-800 font-medium">{{ $property->name }}</td>
+                    <td class="p-4 text-slate-600">{{ $property->type }}</td>
+                    <td class="p-4 text-slate-600">{{ $property->city }}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
+                            @if($property->status == 'Available') bg-green-200 text-green-800
+                            @elseif($property->status == 'Full') bg-yellow-200 text-yellow-800
+                            @elseif($property->status == 'Under Maintenance') bg-red-200 text-red-800
+                            @else bg-red-200 text-red-800 @endif">
+                            {{ $property->status }}
+                        </span>
+                    </td>
+                    <td class="p-4 space-x-2">
+                        <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
+                        <button class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
+                    </td>
+                </tr>
+            @empty
+                <tr>
+                    <td colspan="6" class="p-4 text-center text-slate-500">No properties found.</td>
+                </tr>
+            @endforelse
+        </tbody>
+    </table>
+</div>
                 <div id="addPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
                 <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
                     <div class="flex justify-between items-center p-6 border-b">
                         <h2 class="text-2xl font-semibold">Add New Property</h2>
-                        <button id="close-property-modal-btn" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+                        <button onclick="closePropModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
                     </div>
-        
-        <form id="add-property-form" class="p-6">
+
+        <form action="{{ route('admin.properties.store') }}" method="POST" class="p-6">
+            @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                 <div>
                     <label for="prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
                     <input type="text" name="name" id="prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
                 <div>
-                    <label for="prop_type" class="block text-sm font-medium text-slate-700">Type (e.g., House, Apartment)</label>
-                    <input type="text" name="type" id="prop_type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    <label for="prop_type" class="block text-sm font-medium text-slate-700">Type</label>
+                    <select name="type" id="type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="" disabled selected>Select a property type...</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Hostel">Hostel</option>
+                        <option value="Studio">Studio</option>
+                    </select>
                 </div>
                 <div>
                     <label for="prop_address" class="block text-sm font-medium text-slate-700">Address</label>
@@ -130,14 +175,14 @@
                     <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
                     <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="available">Available</option>
-                        <option value="sold">Sold</option>
-                        <option value="pending">Pending</option>
+                        <option value="sold">Full</option>
+                        <option value="pending">Under Maintenance</option>
                     </select>
                 </div>
             </div>
             
             <div class="flex justify-end items-center pt-6 mt-4 border-t">
-                <button type="button" id="cancel-property-modal-btn" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
+                <button type="button" onclick="closePropModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
                     Cancel
                 </button>
                 <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-200">
@@ -147,10 +192,10 @@
         </form>
     </div>
 </div>
-            <!-- Appointments Section -->
-            <div id="appointments" class="content-section hidden">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Appointments Schedule</h2>
-                <!-- Appointments content goes here -->
+            <!-- Bookings Section -->
+            <div id="bookings" class="content-section hidden">
+                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Bookings Schedule</h2>
+                <!-- Bookings content goes here -->
             </div>
 
             <!-- Users Section -->
@@ -158,7 +203,7 @@
                 <!-- Section Header -->
                 <div class="flex justify-between items-center mb-8">
                     <h1 class="text-3xl font-semibold text-slate-800">User Management</h1>
-                    <button onclick="openModal()" class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 transition duration-200 shadow-sm flex items-center">
+                    <button onclick="openUserModal()" class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 transition duration-200 shadow-sm flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                         Add User
                     </button>
@@ -198,8 +243,8 @@
                             </span>
                         </td>
                         <td class="p-4 space-x-2">
-                            <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
-                            <button class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
+                            <button type="button" onclick="openEditModal({{ $user->id }})" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
+                            <button type="button" class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
                         </td>
                     </tr>
                 @empty
@@ -218,7 +263,7 @@
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-6 border-b">
             <h2 class="text-2xl font-semibold">Add New User</h2>
-            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+            <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
         </div>
         
         <!-- Modal Body (This is the "POST" part - sending data) -->
@@ -266,7 +311,7 @@
             
             <!-- Modal Footer -->
             <div class="flex justify-end items-center pt-6 mt-4 border-t">
-                <button type="button" onclick="closeModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
+                <button type="button" onclick="closeUserModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
                     Cancel
                 </button>
                 <button type="submit" class="bg-purple-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-purple-700 transition duration-200">
@@ -386,15 +431,38 @@
         }
 
     
-    function openModal() {
+    function openUserModal() {
         document.getElementById('addUserModal').classList.remove('hidden');
         document.getElementById('addUserModal').classList.add('opacity-100');
     }
 
-    function closeModal() {
+    function closeUserModal() {
         document.getElementById('addUserModal').classList.add('hidden');
         document.getElementById('addUserModal').classList.remove('opacity-100');
     }
+
+    function openPropModal() {
+        document.getElementById('addPropertyModal').classList.remove('hidden');
+        document.getElementById('addPropertyModal').classList.add('opacity-100');
+    }
+
+    function closePropModal() {
+        document.getElementById('addPropertyModal').classList.add('hidden');
+        document.getElementById('addPropertyModal').classList.remove('opacity-100');
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+    const closeBtn = document.getElementById('close-property-modal-btn');
+    const cancelBtn = document.getElementById('cancel-property-modal-btn');
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closePropModal);
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', closePropModal);
+    }
+    });
+
     </script>
 </body>
 </html>

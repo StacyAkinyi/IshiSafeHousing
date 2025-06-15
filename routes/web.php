@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AgentController;
 
 
 /*
@@ -31,6 +32,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::get('/properties', [AdminController::class, 'manageProperties'])->name('properties');
+    Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
     
     });
 
