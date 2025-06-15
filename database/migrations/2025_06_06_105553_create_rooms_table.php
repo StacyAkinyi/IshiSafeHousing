@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('rent', 8, 2);
             $table->integer('capacity')->default(1);
             $table->boolean('is_available')->default(true);
+            $table->string('image')->nullable(); // Assuming you want to store an image path
             $table->timestamps();
         });
     }

@@ -16,8 +16,8 @@ class AdminController extends Controller
     public function dashboard()
     {
         $users = User::all(); 
-        $properties = Property::latest()->get();
-        $bookings = Booking::all(); // Get latest bookings
+        $properties = Property::all();
+        $bookings = Booking::latest()->get(); // Get latest bookings
         $reviews = Review::all();
         // Fetches all users from the database
         return view('admin.dashboard', [
@@ -59,7 +59,7 @@ class AdminController extends Controller
     }
     public function manageProperties()
     {
-        $properties = Property::latest()->get(); 
+        $properties = Property::all(); // Fetch all properties from the database
         return view('admin.properties', ['properties' => $properties]);
     }
     public function storeProperty(Request $request)

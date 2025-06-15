@@ -177,8 +177,8 @@
                     <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
                     <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="available">available</option>
-                        <option value="sold">full</option>
-                        <option value="pending">under_maintenance</option>
+                        <option value="full">full</option>
+                        <option value="under_maintenance">under maintenance</option>
                     </select>
                 </div>
                 <div>
@@ -240,6 +240,7 @@
                 </tr>
             </thead>
             <tbody>
+                
                 @forelse ($users as $user)
                     <tr class="border-b hover:bg-slate-50 transition">
                         <td class="p-4 text-slate-800">{{ $user->id }}</td>
@@ -254,7 +255,7 @@
                             </span>
                         </td>
                         <td class="p-4 space-x-2">
-                            <button type="button" onclick="openEditModal({{ $user->id }})" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
+                            <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
                             <button type="button" class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
                         </td>
                     </tr>
@@ -364,7 +365,7 @@
       </div>
 
       <div class="flex justify-end items-center pt-6 mt-4 border-t">
-        <button type="button" onclick="closeEditModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 border mr-2">Cancel</button>
+        <button type="button" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 border mr-2">Cancel</button>
         <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700">Update User</button>
       </div>
     </form>
@@ -387,77 +388,63 @@
 
    
     <script>
+    // This runs once the entire page is loaded
+    document.addEventListener('DOMContentLoaded', function () {
+    const links = document.querySelectorAll('.sidebar-link');
+    const sections = document.querySelectorAll('.content-section');
 
-        document.addEventListener('DOMContentLoaded', function () {
-        const links = document.querySelectorAll('.sidebar-link');
-        const sections = document.querySelectorAll('.content-section');
+    links.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
 
-        links.forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            console.log('Clicked targetId:', targetId);
 
-                links.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
+            const targetSection = document.getElementById(targetId);
+            console.log('Target section element:', targetSection);
 
-                const targetId = this.getAttribute('data-target');
+            // Hide all
+            sections.forEach(section => section.classList.add('hidden'));
 
-                // Hide all content sections
-                sections.forEach(section => section.classList.add('hidden'));
-
-                // Show the selected section
-                const targetSection = document.getElementById(targetId);
-                if (targetSection) {
-                    targetSection.classList.remove('hidden');
-                }
-            });
+            // Show target
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            } else {
+                console.error(`No section found with ID "${targetId}"`);
+            }
         });
+    });
+});
 
-    
-        document.querySelectorAll('.edit-user-btn').forEach(button => {
-            button.addEventListener('click', () => {
-            const user = JSON.parse(button.dataset.user);
-            openEditModal(user);
-            });
-        });
-     });
-      function openEditModal(user) {
+    // --- All Modal Functions ---
+    function openEditModal(user) {
         const modal = document.getElementById('editUserModal');
         document.getElementById('edit_name').value = user.name;
         document.getElementById('edit_email').value = user.email;
         document.getElementById('edit_role').value = user.role;
         document.getElementById('editUserForm').action = `/admin/users/${user.id}`;
         modal.classList.remove('hidden');
-        modal.classList.add('opacity-100');
-        }
+    }
 
-        function closeEditModal() {
-        const modal = document.getElementById('editUserModal');
-        modal.classList.add('hidden');
-        modal.classList.remove('opacity-100');
-        }
+    function closeEditModal() {
+        document.getElementById('editUserModal').classList.add('hidden');
+    }
 
-    
     function openUserModal() {
         document.getElementById('addUserModal').classList.remove('hidden');
-        document.getElementById('addUserModal').classList.add('opacity-100');
     }
 
     function closeUserModal() {
         document.getElementById('addUserModal').classList.add('hidden');
-        document.getElementById('addUserModal').classList.remove('opacity-100');
     }
 
     function openPropModal() {
         document.getElementById('addPropertyModal').classList.remove('hidden');
-        document.getElementById('addPropertyModal').classList.add('opacity-100');
     }
 
     function closePropModal() {
         document.getElementById('addPropertyModal').classList.add('hidden');
-        document.getElementById('addPropertyModal').classList.remove('opacity-100');
     }
-
-
-    </script>
+</script>
 </body>
 </html>

@@ -48,9 +48,9 @@
                     <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     Dashboard
                 </a>
-                <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="schedule">
+                <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="bookings">
                     <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    Schedule
+                    Bookings
                 </a>
                 <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="rooms">
                      <svg class="h-6 w-6 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z" /></svg>
@@ -82,13 +82,13 @@
                 <h2 class="text-3xl font-semibold text-slate-700 mb-6">Agent Dashboard</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Stats Cards for an Agent -->
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <p class="text-sm font-medium text-slate-500">My Assigned Properties</p>
-                        <p class="text-3xl font-bold text-slate-800">15</p>
+                     <div class="bg-white p-6 rounded-xl shadow-md">
+                        <p class="text-sm font-medium text-slate-500">Bookings</p>
+                        <p class="text-3xl font-bold text-slate-800">4</p>
                     </div>
                     <div class="bg-white p-6 rounded-xl shadow-md">
-                        <p class="text-sm font-medium text-slate-500">New Appointments</p>
-                        <p class="text-3xl font-bold text-slate-800">4</p>
+                        <p class="text-sm font-medium text-slate-500">My Assigned Rooms</p>
+                        <p class="text-3xl font-bold text-slate-800">15</p>
                     </div>
                      <div class="bg-white p-6 rounded-xl shadow-md">
                         <p class="text-sm font-medium text-slate-500">Unread Reviews</p>
@@ -97,12 +97,12 @@
                 </div>
             </div>
 
-            <!-- Properties Section -->
-            <div id="properties" class="content-section hidden">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Properties</h2>
+            <!-- Bookings Section -->
+            <div id="bookings" class="content-section hidden">
+                <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Bookings</h2>
                 <div class="bg-white rounded-xl shadow-md p-4">
-                    <!-- Placeholder for properties assigned to the agent -->
-                    <p class="text-slate-600">This area will list the properties you manage. You will be able to edit details, update status, and manage rooms for each property.</p>
+                    
+                    <p class="text-slate-600">This area will list the bookings you have made. You will be able to edit details, update status, and manage rooms for each booking.</p>
                 </div>
             </div>
 
@@ -123,6 +123,8 @@
                     <p class="text-slate-600">This section will show recent reviews and ratings submitted by students for the properties and rooms you manage.</p>
                  </div>
             </div>
+
+           
 
         </main>
     </div>
