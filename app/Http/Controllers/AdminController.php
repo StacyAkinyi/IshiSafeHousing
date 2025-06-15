@@ -59,11 +59,12 @@ class AdminController extends Controller
     }
     public function manageProperties()
     {
-        $properties = Property::latest()->get(); // Fetches all properties
+        $properties = Property::latest()->get(); 
         return view('admin.properties', ['properties' => $properties]);
     }
     public function storeProperty(Request $request)
     {
+        
         // Validate the incoming request data
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -71,7 +72,7 @@ class AdminController extends Controller
             'address' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string'],
-            'status' => ['required', 'string', 'in:Available,Full,Under Maintenance'],
+            'status' => ['required', 'string', 'in:available,full,under_maintenance'],
             'latitude' => ['required', 'numeric'],
             'longitude' => ['required', 'numeric'],
         ]);
@@ -89,7 +90,7 @@ class AdminController extends Controller
         ]);
 
         // Redirect back to the property management page with a success message
-        return redirect()->route('admin.properties')->with('success', 'Property created successfully.');
+        return redirect()->route('admin.dashboard')->with('success', 'Property created successfully.');
     }
 
 }

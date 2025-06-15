@@ -40,7 +40,7 @@
                     <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     Properties
                 </a>
-                 <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="appointments">
+                 <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="bookings">
                     <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     Bookings
                 </a>
@@ -85,10 +85,20 @@
                         Add Property
                     </button>
                 </div>
+                @if ($errors->any())
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+                        <strong class="font-bold">Please fix the following errors:</strong>
+                        <ul class="mt-2 list-disc list-inside text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
               <div class="bg-white rounded-xl shadow-md overflow-hidden">
-    <table class="min-w-full text-left">
-        <thead class="bg-slate-50 border-b">
+            <table class="min-w-full text-left">
+                <thead class="bg-slate-50 border-b">
             <tr>
                 <th class="p-4 text-sm font-semibold text-slate-600">ID</th>
                 <th class="p-4 text-sm font-semibold text-slate-600">Property Name</th>
@@ -164,6 +174,14 @@
                     <textarea name="description" id="prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                 </div>
                 <div>
+                    <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
+                    <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="available">available</option>
+                        <option value="sold">full</option>
+                        <option value="pending">under_maintenance</option>
+                    </select>
+                </div>
+                <div>
                     <label for="prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
                     <input type="text" name="latitude" id="prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
@@ -171,14 +189,7 @@
                     <label for="prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
                     <input type="text" name="longitude" id="prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
-                 <div>
-                    <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
-                    <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="available">Available</option>
-                        <option value="sold">Full</option>
-                        <option value="pending">Under Maintenance</option>
-                    </select>
-                </div>
+                 
             </div>
             
             <div class="flex justify-end items-center pt-6 mt-4 border-t">
@@ -385,18 +396,13 @@
             link.addEventListener('click', function (e) {
                 e.preventDefault();
 
-                // Remove "active" class from all links
                 links.forEach(l => l.classList.remove('active'));
-
-                // Add "active" class to current link
                 this.classList.add('active');
 
                 const targetId = this.getAttribute('data-target');
 
                 // Hide all content sections
-                sections.forEach(section => {
-                    section.classList.add('hidden');
-                });
+                sections.forEach(section => section.classList.add('hidden'));
 
                 // Show the selected section
                 const targetSection = document.getElementById(targetId);
@@ -405,15 +411,15 @@
                 }
             });
         });
-    });
-      window.addEventListener('DOMContentLoaded', () => {
+
+    
         document.querySelectorAll('.edit-user-btn').forEach(button => {
             button.addEventListener('click', () => {
             const user = JSON.parse(button.dataset.user);
             openEditModal(user);
             });
         });
-    });
+     });
       function openEditModal(user) {
         const modal = document.getElementById('editUserModal');
         document.getElementById('edit_name').value = user.name;
@@ -450,18 +456,7 @@
         document.getElementById('addPropertyModal').classList.add('hidden');
         document.getElementById('addPropertyModal').classList.remove('opacity-100');
     }
-    document.addEventListener('DOMContentLoaded', function () {
-    const closeBtn = document.getElementById('close-property-modal-btn');
-    const cancelBtn = document.getElementById('cancel-property-modal-btn');
 
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closePropModal);
-    }
-
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', closePropModal);
-    }
-    });
 
     </script>
 </body>
