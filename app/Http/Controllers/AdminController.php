@@ -17,11 +17,11 @@ class AdminController extends Controller
     {
         $users = User::all(); 
         $properties = Property::all();
-        $appointments = Appointment::latest()->get(); // Get latest appointments
+        $bookings = Bookings::latest()->get(); // Get latest appointments
         $reviews = Review::latest()->get();
         // Fetches all users from the database
         return view('admin.dashboard', ['users' => $users,  'properties' => $properties,
-            'appointments' => $appointments,
+            'bookings' => $bookings,
             'reviews' => $reviews,]); // Pass the users to the view
     }
     public function manageUsers()

@@ -77,11 +77,76 @@
             </div>
 
             <!-- Properties Section -->
-            <div id="properties" class="content-section hidden">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Manage Properties</h2>
-                <!-- Properties content goes here -->
-            </div>
+             <div id="properties" class="content-section hidden">
+                 <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-semibold text-slate-800">Manage Properties</h1>
+                    <button id="open-property-modal-btn" class="bg-indigo-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-600 transition duration-200 shadow-sm flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add Property
+                    </button>
+                </div>
 
+                <div id="properties-table-container" class="bg-white rounded-xl shadow-md overflow-x-auto">
+                    </div>
+                </div>
+                <div id="addPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
+                    <div class="flex justify-between items-center p-6 border-b">
+                        <h2 class="text-2xl font-semibold">Add New Property</h2>
+                        <button id="close-property-modal-btn" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+                    </div>
+        
+        <form id="add-property-form" class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <label for="prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
+                    <input type="text" name="name" id="prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="prop_type" class="block text-sm font-medium text-slate-700">Type (e.g., House, Apartment)</label>
+                    <input type="text" name="type" id="prop_type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="prop_address" class="block text-sm font-medium text-slate-700">Address</label>
+                    <input type="text" name="address" id="prop_address" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="prop_city" class="block text-sm font-medium text-slate-700">City</label>
+                    <input type="text" name="city" id="prop_city" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="prop_description" class="block text-sm font-medium text-slate-700">Description</label>
+                    <textarea name="description" id="prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                <div>
+                    <label for="prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
+                    <input type="text" name="latitude" id="prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
+                    <input type="text" name="longitude" id="prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                 <div>
+                    <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
+                    <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="available">Available</option>
+                        <option value="sold">Sold</option>
+                        <option value="pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="flex justify-end items-center pt-6 mt-4 border-t">
+                <button type="button" id="cancel-property-modal-btn" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-200">
+                    Save Property
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
             <!-- Appointments Section -->
             <div id="appointments" class="content-section hidden">
                 <h2 class="text-3xl font-semibold text-slate-700 mb-6">Appointments Schedule</h2>
@@ -90,26 +155,26 @@
 
             <!-- Users Section -->
              <div id="users" class="content-section hidden">
-    <!-- Section Header -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-semibold text-slate-800">User Management</h1>
-        <button onclick="openModal()" class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 transition duration-200 shadow-sm flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-            Add User
-        </button>
-    </div>
+                <!-- Section Header -->
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-semibold text-slate-800">User Management</h1>
+                    <button onclick="openModal()" class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 transition duration-200 shadow-sm flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add User
+                    </button>
+                </div>
 
-    <!-- Success Message -->
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
-            <p>{{ session('success') }}</p>
-        </div>
-    @endif
+                <!-- Success Message -->
+                @if (session('success'))
+                    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
+                        <p>{{ session('success') }}</p>
+                    </div>
+                @endif
     
     <!-- Users Table (This is the "GET" part - displaying data) -->
-    <div class="bg-white rounded-xl shadow-md overflow-hidden">
-        <table class="min-w-full text-left">
-            <thead class="bg-slate-50 border-b">
+             <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <table class="min-w-full text-left">
+                    <thead class="bg-slate-50 border-b">
                 <tr>
                     <th class="p-4 text-sm font-semibold text-slate-600">ID</th>
                     <th class="p-4 text-sm font-semibold text-slate-600">Name</th>
@@ -264,8 +329,9 @@
         <!-- ... modal content ... -->
     </div>
 
-    <!-- SCRIPT (Keep this part as is) -->
+   
     <script>
+
         document.addEventListener('DOMContentLoaded', function () {
         const links = document.querySelectorAll('.sidebar-link');
         const sections = document.querySelectorAll('.content-section');
