@@ -49,5 +49,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function agentProfile()
+    {
+        return $this->hasOne(Agent::class);
+    }
     
 }

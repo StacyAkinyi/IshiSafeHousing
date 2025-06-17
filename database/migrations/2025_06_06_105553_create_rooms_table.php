@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('property_id')->constrained()->onDelete('cascade');
-            $table->foreignId('agent_id')->constrained()->onDelete('cascade');
+            $table->foreignId('agent_id')->constrained(table: 'users', indexName: 'rooms_agent_id')->onDelete('cascade');
             $table->string('room_number')->nullable();
             $table->text('description')->nullable();
             $table->decimal('rent', 8, 2);

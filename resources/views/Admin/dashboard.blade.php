@@ -136,6 +136,7 @@
             @endforelse
         </tbody>
     </table>
+    </div>
 </div>
                 <div id="addPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
                 <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
@@ -255,8 +256,15 @@
                             </span>
                         </td>
                         <td class="p-4 space-x-2">
-                            <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
-                            <button type="button" class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
+                            <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold edit-user-btn" data-user="@json($user)">Edit</button>
+                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                    Delete
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
                 @empty
@@ -310,6 +318,10 @@
                         <option value="agent">Agent</option>
                         <option value="admin">Admin</option>
                     </select>
+                </div>
+                 <div id="licenseNumberField" class="hidden">
+                    <label for="license_number" class="block text-sm font-medium text-slate-700">Agent License Number</label>
+                    <input type="text" name="license_number" id="license_number" class="mt-1 block w-full ..." value="{{ old('license_number') }}">
                 </div>
                  <div>
                     <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
@@ -381,70 +393,109 @@
         </main>
     </div>
 
-    <!-- Add User Modal (Keep this part as is) -->
-    <div id="addUserModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-        <!-- ... modal content ... -->
-    </div>
+
 
    
     <script>
-    // This runs once the entire page is loaded
-    document.addEventListener('DOMContentLoaded', function () {
-    const links = document.querySelectorAll('.sidebar-link');
-    const sections = document.querySelectorAll('.content-section');
+        document.addEventListener('DOMContentLoaded', function () {
+        const links = document.querySelectorAll('.sidebar-link');
+        const sections = document.querySelectorAll('.content-section');
 
-    links.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
+        // This is the function that shows one section and hides the others
+        const showSection = (targetId) => {
+            console.log(`Attempting to show section: #${targetId}`);
 
-            const targetId = this.getAttribute('data-target');
-            console.log('Clicked targetId:', targetId);
+            // Hide all content sections
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
 
+            // Find the specific section to show
             const targetSection = document.getElementById(targetId);
-            console.log('Target section element:', targetSection);
 
-            // Hide all
-            sections.forEach(section => section.classList.add('hidden'));
-
-            // Show target
             if (targetSection) {
+                // If found, remove the 'hidden' class to make it visible
                 targetSection.classList.remove('hidden');
+                console.log(`Successfully displayed #${targetId}`);
             } else {
-                console.error(`No section found with ID "${targetId}"`);
+                console.error(`Error: Could not find a section with the ID "${targetId}"`);
             }
+        };
+
+        // --- Handle Initial Page Load ---
+        const initiallyActiveLink = document.querySelector('.sidebar-link.active');
+        if (initiallyActiveLink) {
+            const initialTarget = initiallyActiveLink.getAttribute('data-target');
+            showSection(initialTarget);
+        }
+
+        // --- Handle Clicks on Sidebar Links ---
+        links.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Remove 'active' class from all links
+                links.forEach(l => l.classList.remove('active'));
+                
+                // Add 'active' class to the one that was clicked
+                this.classList.add('active');
+
+                const targetId = this.getAttribute('data-target');
+                
+                // Call the function to show the correct section
+                showSection(targetId);
+            });
         });
+        const roleDropdown = document.getElementById('role');
+    const licenseField = document.getElementById('licenseNumberField');
+
+    // Function to check the dropdown value
+    const toggleLicenseField = () => {
+        if (roleDropdown.value === 'agent') {
+            licenseField.classList.remove('hidden'); // Show the field
+        } else {
+            licenseField.classList.add('hidden'); // Hide the field
+        }
+    };
+
+    // Add an event listener to the dropdown
+    roleDropdown.addEventListener('change', toggleLicenseField);
+
+    // Run it once on page load in case of validation errors
+    toggleLicenseField();
     });
-});
-
-    // --- All Modal Functions ---
-    function openEditModal(user) {
-        const modal = document.getElementById('editUserModal');
-        document.getElementById('edit_name').value = user.name;
-        document.getElementById('edit_email').value = user.email;
-        document.getElementById('edit_role').value = user.role;
-        document.getElementById('editUserForm').action = `/admin/users/${user.id}`;
-        modal.classList.remove('hidden');
-    }
-
-    function closeEditModal() {
-        document.getElementById('editUserModal').classList.add('hidden');
-    }
-
+     // --- User Modals ---
     function openUserModal() {
         document.getElementById('addUserModal').classList.remove('hidden');
     }
-
     function closeUserModal() {
         document.getElementById('addUserModal').classList.add('hidden');
     }
 
+    // --- Edit User Modal ---
+    function openEditModal(user) {
+        const modal = document.getElementById('editUserModal');
+        // Populate the form fields
+        document.getElementById('edit_name').value = user.name;
+        document.getElementById('edit_email').value = user.email;
+        document.getElementById('edit_role').value = user.role;
+        // Set the form action dynamically for the update
+        document.getElementById('editUserForm').action = `/admin/users/${user.id}`;
+        
+        modal.classList.remove('hidden');
+    }
+    function closeEditModal() {
+        document.getElementById('editUserModal').classList.add('hidden');
+    }
+
+    // --- Property Modals ---
     function openPropModal() {
         document.getElementById('addPropertyModal').classList.remove('hidden');
     }
-
     function closePropModal() {
         document.getElementById('addPropertyModal').classList.add('hidden');
     }
-</script>
+
+    </script>
 </body>
 </html>

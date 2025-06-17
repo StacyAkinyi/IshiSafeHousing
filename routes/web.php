@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
+use App\Http\Controllers\RoomController;
 
 
 /*
@@ -32,17 +33,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'manageUsers'])->name('users');
     Route::post('/users', [AdminController::class, 'storeUser'])->name('users.store');
+    Route::put('/users', [AdminController::class, 'update'])->name('users.update');
+    Route::delete('/users', [AdminController::class, 'destroy'])->name('users.destroy');
     Route::get('/properties', [AdminController::class, 'manageProperties'])->name('properties');
     Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
     
     });
 
-// Agent-specific routes.
-// This group requires the user to be logged in. You could add a custom 'agent'
-// middleware here later if needed, just like the 'admin' one.
+
 Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () {
    Route::get('/dashboard', [AgentController::class, 'dashboard'])->name('dashboard');
+   Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
+   Route::get('/properties/{property}/rooms/create', [RoomController::class, 'create'])->name('rooms.create');
+   Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
 });
+
 
 // Student-specific dashboard (this is the default dashboard).
 // The route name 'dashboard' doesn't conflict with the others because the redirection

@@ -108,13 +108,138 @@
 
             <!-- Rooms Section -->
             <div id="rooms" class="content-section hidden">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Manage Rooms</h2>
-                 <div class="bg-white rounded-xl shadow-md p-4">
-                    <!-- Placeholder for rooms -->
-                    <p class="text-slate-600">Here you can manage individual rooms within your properties. This includes setting rent, capacity, and availability status.</p>
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-3xl font-semibold text-slate-800">Manage Rooms</h1>
+                    <button onclick="openRoomModal()" class="bg-blue-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-600 transition shadow-sm flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    Add Room
+                    </button>
                 </div>
+                @if (session('success_room'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md" role="alert">
+            <p>{{ session('success_room') }}</p>
+        </div>
+    @endif
+
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <table class="min-w-full text-left">
+            <thead class="bg-slate-50 border-b">
+                <tr>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Room Number</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Property</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Rent</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Capacity</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Status</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($rooms as $room)
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-4 text-slate-800 font-medium">{{ $room->room_number }}</td>
+                        <td class="p-4 text-slate-600">{{ $room->property->name ?? 'N/A' }}</td>
+                        <td class="p-4 text-slate-600">{{ number_format($room->rent, 2) }}</td>
+                        <td class="p-4 text-slate-600">{{ $room->capacity }} person(s)</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
+                                @if($room->is_available) bg-green-200 text-green-800
+                                @else bg-red-200 text-red-800 @endif">
+                                {{ $room->is_available ? 'Available' : 'Occupied' }}
+                            </span>
+                        </td>
+                        <td class="p-4 space-x-2">
+                            <button class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="p-4 text-center text-slate-500">No rooms found. Add one to get started.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="addRoomModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h2 class="text-2xl font-semibold text-slate-800">Add New Room</h2>
+            <button onclick="closeRoomModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+        </div>
+        
+        <form action="{{ route('agent.rooms.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+            @csrf
+            
+            @if ($errors->any())
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <strong class="font-bold">Oops! Something went wrong.</strong>
+                    <ul class="mt-3 list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="property_id" class="block text-sm font-medium text-slate-700">Property</label>
+                    <select name="property_id" id="property_id" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
+                        <option value="" disabled selected>Select a property...</option>
+                        @foreach ($properties as $property)
+                            <option value="{{ $property->id }}" {{ old('property_id') == $property->id ? 'selected' : '' }}>{{ $property->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="rent" class="block text-sm font-medium text-slate-700">Monthly Rent: Kshs</label>
+                    <input type="number" name="rent" id="rent" value="{{ old('rent') }}" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">
+                </div>
+
+                <div>
+                    <label for="capacity" class="block text-sm font-medium text-slate-700">Capacity (Persons)</label>
+                    <input type="number" name="capacity" id="capacity" value="{{ old('capacity', 1) }}" required min="1" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-sm font-medium text-slate-700">Description</label>
+                    <textarea name="description" id="description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">{{ old('description') }}</textarea>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label for="is_available" class="inline-flex items-center">
+                        <input id="is_available" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm" name="is_available" value="1" checked>
+                        <span class="ml-2 text-sm text-gray-600">Mark as Available upon creation</span>
+                    </label>
+                </div>
+                <div class="md:col-span-2">
+        <label for="images" class="block text-sm font-medium text-slate-700">Room Images</label>
+        <input type="file" name="images[]" id="images" multiple class="mt-1 block w-full text-sm text-slate-500
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-indigo-50 file:text-indigo-700
+            hover:file:bg-indigo-100
+        "/>
+        <p class="mt-1 text-xs text-gray-500">You can select multiple images.</p>
+        @error('images.*')
+            <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+        @enderror
+    </div>
+
             </div>
             
+            <div class="flex justify-end items-center pt-6 mt-4 border-t">
+                <button type="button" onclick="closeRoomModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 mr-2 border border-slate-300">Cancel</button>
+                <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-blue-700">Save Room</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
             <!-- Reviews Section -->
             <div id="reviews" class="content-section hidden">
                  <h2 class="text-3xl font-semibold text-slate-700 mb-6">Recent Reviews</h2>
@@ -158,6 +283,14 @@
                 });
             });
         });
+
+        function openRoomModal() {
+        document.getElementById('addRoomModal').classList.remove('hidden');
+        }
+
+        function closeRoomModal() {
+            document.getElementById('addRoomModal').classList.add('hidden');
+        }
     </script>
 
 </body>
