@@ -7,15 +7,19 @@ use App\Models\Booking;
 use App\Models\Review;
 use App\Models\Room;
 
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
     //
     public function dashboard(){
-              
+        $agent = Auth::user();
+
+
         $properties = Property::all();
-        $rooms = Room::with('property')->get(); // Fetch all rooms with their associated properties
+        $rooms = $agent->rooms()->latest()->get(); // Fetch all rooms with their associated properties
         $bookings = Booking::latest()->get(); // Get latest bookings
         $reviews = Review::all();
         // Fetches all users from the database

@@ -53,5 +53,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Agent::class);
     }
+     public function rooms()
+    {
+        return $this->hasMany(Room::class, 'agent_id');
+    }
     
 }

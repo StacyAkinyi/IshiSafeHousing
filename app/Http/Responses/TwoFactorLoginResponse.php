@@ -17,7 +17,7 @@ class TwoFactorLoginResponse implements TwoFactorLoginResponseContract
             case 'agent':
                 return redirect()->intended('/agent/dashboard');
             default:
-                return redirect()->intended('/dashboard');
+                return redirect()->intended('/student/dashboard');
         }
     }
 }

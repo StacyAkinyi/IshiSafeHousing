@@ -48,6 +48,11 @@ Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () 
    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
 });
 
+Route::middleware(['auth', 'student'])->group(function () {
+    Route::get('/student/dashboard', [StudentController::class, 'dashboard'])->name('student.dashboard');
+});
+
+
 
 // Student-specific dashboard (this is the default dashboard).
 // The route name 'dashboard' doesn't conflict with the others because the redirection

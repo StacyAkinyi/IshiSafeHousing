@@ -64,7 +64,7 @@
 
             <!-- Logout -->
             <div class="px-4 py-6 mt-auto">
-                 <form method="POST" action="{{ route('logout') }}">
+                 <form method="POST" action="/logout">
                     @csrf
                     <button type="submit" class="w-full text-left flex items-center py-3 px-4 rounded-lg text-red-300 transition duration-200 hover:bg-red-500 hover:text-white">
                         <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
@@ -195,7 +195,7 @@
 
                 <div>
                     <label for="rent" class="block text-sm font-medium text-slate-700">Monthly Rent: Kshs</label>
-                    <input type="number" name="rent" id="rent" value="{{ old('rent') }}" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">
+                    <input type="number" name="rent" id="rent" value="{{ old('rent') }}" step="0.01" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">
                 </div>
 
                 <div>
