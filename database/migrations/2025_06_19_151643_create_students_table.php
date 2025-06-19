@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('next_of_kins', function (Blueprint $table) {
+        Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->string('relationship');
-            $table->string('phone_number');
-            $table->string('email')->nullable();
+            $table->string('full_name');
+            $table->string('phone_number')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('next_of_kins');
+        Schema::dropIfExists('students');
     }
 };

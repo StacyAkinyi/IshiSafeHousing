@@ -316,7 +316,6 @@
                     <select name="role" id="role" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
                         <option value="student">Student</option>
                         <option value="agent">Agent</option>
-                        <option value="admin">Admin</option>
                     </select>
                 </div>
                  <div id="licenseNumberField" class="hidden">

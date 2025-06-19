@@ -53,9 +53,14 @@ Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () 
 
 Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
-    Route::get('/account', [AccountController::class, 'index'])->name('account.index');
-    Route::post('/account/update-details', [AccountController::class, 'updateDetails'])->name('account.updateDetails');
-    Route::post('/account/update-next-of-kin', [AccountController::class, 'updateNextOfKin'])->name('account.updateNextOfKin');
+    Route::get('/account', [StudentController::class, 'index'])->name('account.index');
+    Route::put('/account', [StudentController::class, 'update'])->name('account.update');
+     Route::post('/account/update-details', [StudentController::class, 'updateDetails'])
+         ->name('account.updateDetails');
+
+    // This route handles the next of kin form submission
+    Route::post('/account/update-next-of-kin', [StudentController::class, 'updateNextOfKin'])
+         ->name('account.updateNextOfKin');
 });
 
 

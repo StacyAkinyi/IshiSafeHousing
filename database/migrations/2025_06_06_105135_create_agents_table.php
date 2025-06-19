@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('phone_number')->nullable();
             $table->string('license_number')->unique();
             $table->timestamps();
         });

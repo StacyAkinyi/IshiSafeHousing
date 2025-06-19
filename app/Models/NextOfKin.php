@@ -10,15 +10,16 @@ class NextOfKin extends Model
      use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'student_id',
         'name',
         'relationship',
+        'id_number',
         'phone_number',
         'email',
     ];
 
-    public function user()
+    public function student()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Student::class);
     }
 }

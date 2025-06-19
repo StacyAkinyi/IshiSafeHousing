@@ -44,9 +44,133 @@
         </div>
         <div id="account" class="content-section">
             <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Account</h2>
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                <p class="text-slate-600">Here you can manage your account settings and preferences.</p>
+            @if (session('success'))
+        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+            <span class="block sm:inline">{{ session('success') }}</span>
+        </div>
+    @endif
+
+    <div class="space-y-8">
+
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-semibold text-slate-700">Personal Details</h3>
+                <button data-modal-target="personalDetailsModal" class="text-sm bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-200 transition">
+                    Edit Details
+                </button>
             </div>
+            <div class="space-y-3 text-slate-600">
+                <div class="flex">
+                    <p class="w-1/3 font-medium text-slate-500">Full Name</p>
+                    <p class="w-2/3">{{ $student->name }}</p>
+                </div>
+                <div class="flex">
+                    <p class="w-1/3 font-medium text-slate-500">Email Address</p>
+                    <p class="w-2/3">{{ $student->email }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md">
+            @if ($student->nextOfKin)
+                {{-- This shows if a Next of Kin EXISTS --}}
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-2xl font-semibold text-slate-700">Next of Kin Details</h3>
+                    <button data-modal-target="nextOfKinModal" class="text-sm bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-200 transition">
+                        Update Details
+                    </button>
+                </div>
+                <div class="space-y-3 text-slate-600">
+                    <div class="flex">
+                        <p class="w-1/3 font-medium text-slate-500">Full Name</p>
+                        <p class="w-2/3">{{ $student->nextOfKin->name }}</p>
+                    </div>
+                    <div class="flex">
+                        <p class="w-1/3 font-medium text-slate-500">Relationship</p>
+                        <p class="w-2/3">{{ $student->nextOfKin->relationship }}</p>
+                    </div>
+                    <div class="flex">
+                        <p class="w-1/3 font-medium text-slate-500">Phone Number</p>
+                        <p class="w-2/3">{{ $student->nextOfKin->phone_number }}</p>
+                    </div>
+                     <div class="flex">
+                        <p class="w-1/3 font-medium text-slate-500">Email Address</p>
+                        <p class="w-2/3">{{ $student->nextOfKin->email ?? 'N/A' }}</p>
+                    </div>
+                </div>
+            @else
+                {{-- This shows if a Next of Kin DOES NOT exist --}}
+                <div class="text-center">
+                    <h3 class="text-2xl font-semibold text-slate-700 mb-2">Next of Kin</h3>
+                    <p class="text-slate-500 mb-4">You have not added a next of kin yet.</p>
+                    <button data-modal-target="nextOfKinModal" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">
+                        Add Next of Kin
+                    </button>
+                </div>
+            @endif
+        </div>
+
+    </div>
+</div>
+
+<div id="personalDetailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-semibold text-slate-700">Edit Personal Details</h3>
+            <button data-modal-hide="personalDetailsModal" class="text-slate-500 hover:text-slate-800">&times;</button>
+        </div>
+        <form action="{{ route('student.account.updateDetails') }}" method="POST">
+            @csrf
+            <div class="space-y-4">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-slate-600">Full Name</label>
+                    <input type="text" name="name" value="{{ old('name', $student->name) }}" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-slate-600">Email Address</label>
+                    <input type="email" name="email" value="{{ old('email', $student->email) }}" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="nextOfKinModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-semibold text-slate-700">Next of Kin Details</h3>
+            <button data-modal-hide="nextOfKinModal" class="text-slate-500 hover:text-slate-800">&times;</button>
+        </div>
+        <form action="{{ route('student.account.updateNextOfKin') }}" method="POST">
+            @csrf
+            <div class="space-y-4">
+                <div>
+                    <label for="kin_name" class="block text-sm font-medium text-slate-600">Full Name</label>
+                    <input type="text" name="kin_name" value="{{ old('kin_name', $student->nextOfKin->name ?? '') }}" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="kin_relationship" class="block text-sm font-medium text-slate-600">Relationship</label>
+                    <input type="text" name="kin_relationship" value="{{ old('kin_relationship', $student->nextOfKin->relationship ?? '') }}" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="kin_phone_number" class="block text-sm font-medium text-slate-600">Phone Number</label>
+                    <input type="tel" name="kin_phone_number" value="{{ old('kin_phone_number', $student->nextOfKin->phone_number ?? '') }}" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label for="kin_email" class="block text-sm font-medium text-slate-600">Email Address (Optional)</label>
+                    <input type="email" name="kin_email" value="{{ old('kin_email', $student->nextOfKin->email ?? '') }}" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500">
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Save Next of Kin</button>
+            </div>
+        </form>
+    </div>
+
+
         </div>
 
         <div id="properties" class="content-section hidden">
@@ -122,38 +246,107 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const links = document.querySelectorAll('.sidebar-link');
-        const sections = document.querySelectorAll('.content-section');
-        
-        const showSection = (targetId) => {
-            sections.forEach(section => section.classList.add('hidden'));
-            const targetSection = document.getElementById(targetId);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
+
+    // ===================================================================
+    // 1. Sidebar and Content Section Logic
+    // ===================================================================
+    const links = document.querySelectorAll('.sidebar-link');
+    const sections = document.querySelectorAll('.content-section');
+
+    const showSection = (targetId) => {
+        // First, hide all sections
+        sections.forEach(section => {
+            if (!section.classList.contains('hidden')) {
+                section.classList.add('hidden');
             }
-        };
-
-        const activeLink = document.querySelector('.sidebar-link.active');
-        if (activeLink) {
-            showSection(activeLink.getAttribute('data-target'));
+        });
+        
+        // Then, show the target section
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+            targetSection.classList.remove('hidden');
         }
+    };
 
-        links.forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
-                links.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                showSection(this.getAttribute('data-target'));
-            });
+    const setActiveLink = (targetId) => {
+        links.forEach(l => l.classList.remove('active'));
+        const newActiveLink = document.querySelector(`.sidebar-link[data-target="${targetId}"]`);
+        if (newActiveLink) {
+            newActiveLink.classList.add('active');
+        }
+    };
+
+    // Handle clicks on sidebar links
+    links.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            setActiveLink(targetId);
+            showSection(targetId);
         });
     });
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('propertySearch');
-        const propertyCards = document.querySelectorAll('.property-card');
 
+    // ===================================================================
+    // 2. Initial Page Load Logic
+    // ===================================================================
+    // Check if the server redirected with a specific section to show (e.g., after form submission)
+    const activeSectionFromSession = @json(session('active_section'));
+
+    if (activeSectionFromSession) {
+        // If the session has a target, show it
+        setActiveLink(activeSectionFromSession);
+        showSection(activeSectionFromSession);
+    } else {
+        // Otherwise, show the default section that has the 'active' class in the HTML
+        const defaultActiveLink = document.querySelector('.sidebar-link.active');
+        if (defaultActiveLink) {
+            showSection(defaultActiveLink.getAttribute('data-target'));
+        }
+    }
+    
+    // ===================================================================
+    // 3. Modal (Pop-up) Logic
+    // ===================================================================
+    const modalTriggers = document.querySelectorAll('[data-modal-target]');
+    const modalHides = document.querySelectorAll('[data-modal-hide]');
+
+    modalTriggers.forEach(trigger => {
+        trigger.addEventListener('click', () => {
+            const modalId = trigger.getAttribute('data-modal-target');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        });
+    });
+
+    modalHides.forEach(hide => {
+        hide.addEventListener('click', () => {
+            const modalId = hide.getAttribute('data-modal-hide');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+
+    document.querySelectorAll('.fixed.inset-0').forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    });
+
+    // ===================================================================
+    // 4. Property Search Logic
+    // ===================================================================
+    const searchInput = document.getElementById('propertySearch');
+    const propertyCards = document.querySelectorAll('.property-card');
+
+    if(searchInput) {
         searchInput.addEventListener('input', function () {
             const query = this.value.trim().toLowerCase();
-
             propertyCards.forEach(card => {
                 const city = card.getAttribute('data-city');
                 if (city.includes(query)) {
@@ -163,7 +356,9 @@
                 }
             });
         });
-    });
+    }
+
+});
 
 </script>
 
