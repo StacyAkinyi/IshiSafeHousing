@@ -5,6 +5,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\Student\AccountController;
+
 
 
 /*
@@ -51,6 +53,9 @@ Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () 
 
 Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
+    Route::get('/account', [AccountController::class, 'index'])->name('account.index');
+    Route::post('/account/update-details', [AccountController::class, 'updateDetails'])->name('account.updateDetails');
+    Route::post('/account/update-next-of-kin', [AccountController::class, 'updateNextOfKin'])->name('account.updateNextOfKin');
 });
 
 

@@ -20,6 +20,7 @@
         </div>
         <nav class="flex-1 px-4 py-6 space-y-2">
             <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg active" data-target="dashboard">Dashboard</a>
+            <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg" data-target="account">My Account</a>
             <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg" data-target="properties">Available Properties</a>
             <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg" data-target="bookings">My Bookings</a>
             <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg" data-target="reviews">My Reviews</a>
@@ -41,12 +42,25 @@
                 <p class="text-slate-600">Welcome to your student dashboard. Here you can browse available rooms, manage your bookings, and see your reviews. Use the menu on the left to navigate.</p>
             </div>
         </div>
+        <div id="account" class="content-section">
+            <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Account</h2>
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <p class="text-slate-600">Here you can manage your account settings and preferences.</p>
+            </div>
+        </div>
 
         <div id="properties" class="content-section hidden">
             <h2 class="text-3xl font-semibold text-slate-700 mb-6">Available Properties</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             <div class="mb-6">
+        <input 
+            type="text" 
+            id="propertySearch" 
+            placeholder="Search by city..." 
+            class="w-full md:w-1/2 px-4 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    </div>
+            <div  id="propertyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($availableProperties as $property)
-                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="property-card bg-white rounded-xl shadow-md overflow-hidden" data-city="{{ strtolower($property->city) }}">
                         <div class="h-40 bg-gray-200"></div>
                         <div class="p-4">
                             <h3 class="font-semibold text-lg">{{ $property->name }}</h3>
@@ -133,6 +147,24 @@
             });
         });
     });
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('propertySearch');
+        const propertyCards = document.querySelectorAll('.property-card');
+
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim().toLowerCase();
+
+            propertyCards.forEach(card => {
+                const city = card.getAttribute('data-city');
+                if (city.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
 </script>
 
 </body>

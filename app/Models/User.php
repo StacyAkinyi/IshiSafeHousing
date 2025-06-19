@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\NextOfKin;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -57,5 +59,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Room::class, 'agent_id');
     }
-    
+    public function nextOfKin()
+    {
+        return $this->hasOne(NextOfKin::class);
+    }
+
 }
