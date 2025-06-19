@@ -24,4 +24,8 @@ class Property extends Model
         'latitude',
         'longitude',
     ];
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
 }

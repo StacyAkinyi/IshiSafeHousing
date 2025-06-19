@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\StudentController;
 
 
 /*
@@ -48,16 +49,13 @@ Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () 
    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
 });
 
-Route::middleware(['auth', 'student'])->group(function () {
-    Route::get('/student/dashboard', [StudentController::class, 'dashboard'])->name('student.dashboard');
+Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
+    Route::get('/dashboard', [StudentController::class, 'dashboard'])->name('dashboard');
 });
 
 
 
-// Student-specific dashboard (this is the default dashboard).
-// The route name 'dashboard' doesn't conflict with the others because the redirection
-// logic will use the full route name (e.g., 'admin.dashboard', 'agent.dashboard')
-// or the specific URL path.
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function() {
         return view('dashboard');
