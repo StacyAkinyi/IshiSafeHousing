@@ -7,6 +7,8 @@ use App\Models\Property;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\Agent;
+use App\Models\Room;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -16,16 +18,72 @@ class AdminController extends Controller
 {
     public function dashboard()
     {
-        $users = User::all(); 
+        $users = User::where('role', '!=', 'admin')->paginate(10, ['*'], 'users_page');
         $properties = Property::all();
         $bookings = Booking::latest()->get(); // Get latest bookings
         $reviews = Review::all();
-        // Fetches all users from the database
+        
+       
+
+        // === 1. DATA FOR STATISTIC CARDS ===
+        $userCount = User::count();
+        $propertyCount = Property::count();
+        $roomCount = Room::count();
+        $reviewCount = Review::count();
+
+        // === 2. DATA FOR GRAPHS ===
+
+        // Users Graph: Count of 'student' vs 'agent'
+        $userRoleData = User::select('role', DB::raw('count(*) as count'))
+            ->whereIn('role', ['student', 'agent'])
+            ->groupBy('role')
+            ->get();
+
+        // Properties Graph: Number of rooms per property (Top 10)
+        $propertiesWithRoomCount = Property::withCount('rooms')
+            ->orderBy('rooms_count', 'desc')
+            ->take(10) // Take top 10 to keep the graph readable
+            ->get();
+
+        // Rooms Graph: Count of available vs. unavailable rooms
+        $roomStatusData = Room::select('is_available', DB::raw('count(*) as count'))
+            ->groupBy('is_available')
+            ->get()
+            ->map(function ($status) {
+                // Make the label more readable
+                $status->label = $status->is_available ? 'Available' : 'Unavailable';
+                return $status;
+            });
+            
+        // Reviews Graph: Number of reviews per property (Top 10)
+        $propertiesWithReviewCount = Property::withCount('reviews')
+            ->where('reviews_count', '>', 0) // Only get properties that have reviews
+            ->orderBy('reviews_count', 'desc')
+            ->take(10)
+            ->get();
+
+
+        // === 3. PASS ALL DATA TO THE VIEW ===
         return view('admin.dashboard', [
-            'users' => $users,  
+            // Data for Stat Cards
+            'userCount' => $userCount,
+            'propertyCount' => $propertyCount,
+            'roomCount' => $roomCount,
+            'reviewCount' => $reviewCount,
+
+            // Data for Graphs
+            'userRoleData' => $userRoleData,
+            'propertiesWithRoomCount' => $propertiesWithRoomCount,
+            'roomStatusData' => $roomStatusData,
+            'propertiesWithReviewCount' => $propertiesWithReviewCount,
+
+            // Other data for the dashboard
+             'users' => $users,  
             'properties' => $properties,
             'bookings' => $bookings,
-            'reviews' => $reviews,]); // Pass the users to the view
+            'reviews' => $reviews,
+            
+        ]);
     }
     public function manageUsers()
     {

@@ -87,8 +87,10 @@ class StudentController extends Controller
         $validatedData = $request->validate([
             'kin_name' => ['required', 'string', 'max:255'],
             'kin_relationship' => ['required', 'string', 'max:255'],
+            'kin_id_number' => ['nullable', 'string', 'max:255'],
             'kin_phone_number' => ['required', 'string', 'max:20'],
             'kin_email' => ['nullable', 'string', 'email', 'max:255'],
+             
         ]);
 
         $nextOfKin = $student->nextOfKin()->updateOrCreate(
@@ -96,8 +98,10 @@ class StudentController extends Controller
             [
                 'name' => $validatedData['kin_name'],
                 'relationship' => $validatedData['kin_relationship'],
+                'id_number' => $validatedData['kin_id_number'],
                 'phone_number' => $validatedData['kin_phone_number'],
                 'email' => $validatedData['kin_email'],
+
             ]
         );
 
