@@ -57,7 +57,7 @@ class AdminController extends Controller
             
         // Reviews Graph: Number of reviews per property (Top 10)
         $propertiesWithReviewCount = Property::withCount('reviews')
-            ->where('reviews_count', '>', 0) // Only get properties that have reviews
+            ->having('reviews_count', '>', 0)
             ->orderBy('reviews_count', 'desc')
             ->take(10)
             ->get();

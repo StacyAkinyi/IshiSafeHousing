@@ -29,4 +29,8 @@ class Booking extends Model
         'start_date' => 'date',
         'end_date' => 'date',
     ];
+     public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
 }

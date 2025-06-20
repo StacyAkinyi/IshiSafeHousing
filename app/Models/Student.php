@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class Student extends Model
 {
     use HasFactory;
@@ -31,6 +33,14 @@ class Student extends Model
     public function nextOfKin(): HasOne
     {
         return $this->hasOne(NextOfKin::class);
+    }
+     public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
+    }
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(Review::class);
     }
 
 }

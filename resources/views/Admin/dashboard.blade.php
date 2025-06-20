@@ -71,50 +71,60 @@
         <main class="flex-1 p-6 lg:p-10 transition-all duration-300">
             <!-- Dashboard Section -->
             <div id="dashboard" class="content-section">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Admin Dashboard</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div data-modal-target="usersChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center">
-                            <div class="bg-blue-100 text-blue-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
-                            <div>
-                                <p class="text-sm text-slate-500">Total Users</p>
-                                <p class="text-2xl font-bold text-slate-800">{{ $userCount }}</p>
-                            </div>
-                        </div>
-                    </div>
+    <h2 class="text-3xl font-semibold text-slate-700 mb-6">Admin Dashboard</h2>
 
-                    <div data-modal-target="propertiesChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center">
-                            <div class="bg-purple-100 text-purple-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
-                            <div>
-                                <p class="text-sm text-slate-500">Total Properties</p>
-                                <p class="text-2xl font-bold text-slate-800">{{ $propertyCount }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div data-modal-target="roomsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center">
-                            <div class="bg-green-100 text-green-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2V5z" /></svg></div>
-                            <div>
-                                <p class="text-sm text-slate-500">Total Rooms</p>
-                                <p class="text-2xl font-bold text-slate-800">{{ $roomCount }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div data-modal-target="reviewsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center">
-                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
-                            <div>
-                                <p class="text-sm text-slate-500">Total Reviews</p>
-                                <p class="text-2xl font-bold text-slate-800">{{ $reviewCount }}</p>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Stats Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Users Card -->
+        <div data-modal-target="usersChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+            <div class="flex items-center">
+                <div class="bg-blue-100 text-blue-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
+                <div>
+                    <p class="text-sm text-slate-500">Total Users</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ $userCount }}</p>
                 </div>
             </div>
-            <div id="usersChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
+        </div>
+
+        <!-- Properties Card -->
+        <div data-modal-target="propertiesChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+            <div class="flex items-center">
+                <div class="bg-purple-100 text-purple-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
+                <div>
+                    <p class="text-sm text-slate-500">Total Properties</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ $propertyCount }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Card -->
+        <div data-modal-target="roomsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+            <div class="flex items-center">
+                <div class="bg-green-100 text-green-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2V5z" /></svg></div>
+                <div>
+                    <p class="text-sm text-slate-500">Total Rooms</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ $roomCount }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews Card -->
+        <div data-modal-target="reviewsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+            <div class="flex items-center">
+                <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full mr-4"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                <div>
+                    <p class="text-sm text-slate-500">Total Reviews</p>
+                    <p class="text-2xl font-bold text-slate-800">{{ $reviewCount }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- Modals for Charts (Placed outside the main content section) -->
+
+<!-- Users Chart Modal -->
+<div id="usersChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold">User Role Distribution</h3>
@@ -124,16 +134,18 @@
     </div>
 </div>
 
+<!-- Properties Chart Modal -->
 <div id="propertiesChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">Rooms per Property (Top 10)</h3>
+            <h3 class="text-xl font-semibold">Rooms per Property</h3>
             <button data-modal-hide="propertiesChartModal" class="text-2xl font-bold">&times;</button>
         </div>
         <canvas id="propertiesChart"></canvas>
     </div>
 </div>
 
+<!-- Rooms Chart Modal -->
 <div id="roomsChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg">
         <div class="flex justify-between items-center mb-4">
@@ -144,6 +156,7 @@
     </div>
 </div>
 
+<!-- Reviews Chart Modal -->
 <div id="reviewsChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50">
     <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg">
         <div class="flex justify-between items-center mb-4">
@@ -153,11 +166,6 @@
         <canvas id="reviewsChart"></canvas>
     </div>
 </div>
-
-        </div>
-    </div>
-                </div>
-            </div>
 
             <!-- Properties Section -->
              <div id="properties" class="content-section hidden">
@@ -540,7 +548,8 @@
         }
     };
 
-
+    // === 1. PASS LARAVEL DATA TO JAVASCRIPT ===
+    // This safely transfers the data from your controller to the script
     const userRoleData = @json($userRoleData);
     const propertiesWithRoomCount = @json($propertiesWithRoomCount);
     const roomStatusData = @json($roomStatusData);
@@ -557,13 +566,14 @@
                 datasets: [{
                     label: 'User Roles',
                     data: userRoleData.map(row => row.count),
-                    backgroundColor: ['#60A5FA', '#818CF8'],
+                    backgroundColor: ['#60A5FA', '#818CF8'], // Blue, Indigo
+                    hoverOffset: 4
                 }]
             }
         });
     };
 
-    // Chart for Rooms per Property (Bar Chart)
+    // Chart for Rooms per Property (Horizontal Bar Chart)
     const renderPropertiesChart = () => {
         new Chart(document.getElementById('propertiesChart'), {
             type: 'bar',
@@ -572,10 +582,15 @@
                 datasets: [{
                     label: '# of Rooms',
                     data: propertiesWithRoomCount.map(p => p.rooms_count),
-                    backgroundColor: '#A78BFA',
+                    backgroundColor: '#A78BFA', // Purple
                 }]
             },
-            options: { indexAxis: 'y' } // Horizontal bar chart
+            options: { 
+                indexAxis: 'y', // This makes the bar chart horizontal
+                scales: {
+                    x: { ticks: { stepSize: 1 } } // Ensure Y-axis shows whole numbers
+                }
+            } 
         });
     };
     
@@ -588,13 +603,14 @@
                 datasets: [{
                     label: 'Room Status',
                     data: roomStatusData.map(row => row.count),
-                    backgroundColor: ['#34D399', '#F87171'],
+                    backgroundColor: ['#34D399', '#F87171'], // Green, Red
+                    hoverOffset: 4
                 }]
             }
         });
     };
 
-    // Chart for Reviews per Property (Bar Chart)
+    // Chart for Reviews per Property (Horizontal Bar Chart)
     const renderReviewsChart = () => {
         new Chart(document.getElementById('reviewsChart'), {
             type: 'bar',
@@ -603,42 +619,54 @@
                 datasets: [{
                     label: '# of Reviews',
                     data: propertiesWithReviewCount.map(p => p.reviews_count),
-                    backgroundColor: '#FBBF24',
+                    backgroundColor: '#FBBF24', // Amber
                 }]
             },
-            options: { indexAxis: 'y' } // Horizontal bar chart
+            options: { 
+                indexAxis: 'y', // This makes the bar chart horizontal
+                scales: {
+                    x: { ticks: { stepSize: 1 } } // Ensure Y-axis shows whole numbers
+                }
+            }
         });
     };
     
     // === 3. MODAL AND EVENT LISTENER LOGIC ===
-    const modals = document.querySelectorAll('.fixed.inset-0');
     const statCards = document.querySelectorAll('.stat-card');
-
-    let charts = {}; // To prevent re-rendering charts
+    let initializedCharts = {}; // To prevent re-drawing a chart every time a modal opens
 
     statCards.forEach(card => {
+        // This listens for a click on each statistics card
         card.addEventListener('click', () => {
             const modalId = card.dataset.modalTarget;
             const modal = document.getElementById(modalId);
-            modal.classList.remove('hidden');
+            
+            if (modal) {
+                // Show the modal
+                modal.classList.remove('hidden');
 
-            // Render chart only once
-            if (!charts[modalId]) {
-                if (modalId === 'usersChartModal') renderUserChart();
-                if (modalId === 'propertiesChartModal') renderPropertiesChart();
-                if (modalId === 'roomsChartModal') renderRoomStatusChart();
-                if (modalId === 'reviewsChartModal') renderReviewsChart();
-                charts[modalId] = true;
+                // IMPORTANT: Render the chart only the first time the modal is opened
+                if (!initializedCharts[modalId]) {
+                    if (modalId === 'usersChartModal') renderUserChart();
+                    if (modalId === 'propertiesChartModal') renderPropertiesChart();
+                    if (modalId === 'roomsChartModal') renderRoomStatusChart();
+                    if (modalId === 'reviewsChartModal') renderReviewsChart();
+                    initializedCharts[modalId] = true; // Mark chart as initialized
+                }
             }
         });
     });
 
+    // This adds functionality to all the 'close' buttons in the modals
     document.querySelectorAll('[data-modal-hide]').forEach(button => {
         button.addEventListener('click', () => {
              const modalId = button.closest('.fixed.inset-0').id;
              document.getElementById(modalId).classList.add('hidden');
         });
     });
+
+
+    
 
     // Add an event listener to the dropdown
     roleDropdown.addEventListener('change', toggleLicenseField);

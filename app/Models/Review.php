@@ -11,4 +11,8 @@ class Review extends Model
     {
         return $this->belongsTo(Property::class);
     }
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
 }

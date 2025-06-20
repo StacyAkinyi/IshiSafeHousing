@@ -32,16 +32,10 @@ class StudentController extends Controller
         }])->latest()->get();
         
         // Fetch only the bookings belonging to this student
-        $myBookings = Booking::where('user_id', $student->id)
-                             ->with('property', 'room') // Eager load relationships
-                             ->latest()
-                             ->get();
+        $myBookings = $student->bookings()->with('property', 'room')->latest()->get();
         
         // Fetch only the reviews written by this student
-        $myReviews = Review::where('user_id', $student->id)
-                           ->with('property') // Eager load relationships
-                           ->latest()
-                           ->get();
+       $myReviews = $student->reviews()->with('property')->latest()->get();
 
         // Pass the data to the view
         return view('student.dashboard', [
