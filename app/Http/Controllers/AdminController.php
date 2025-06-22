@@ -56,11 +56,15 @@ class AdminController extends Controller
             });
             
         // Reviews Graph: Number of reviews per property (Top 10)
-        $propertiesWithReviewCount = Property::withCount('reviews')
-            ->having('reviews_count', '>', 0)
-            ->orderBy('reviews_count', 'desc')
-            ->take(10)
+        $allPropertiesWithReviews = Property::whereHas('reviews')
+            ->withCount('reviews')
             ->get();
+
+        // Step 2: Sort the results in PHP and take the top 10.
+        $propertiesWithReviewCount = $allPropertiesWithReviews
+            ->sortByDesc('reviews_count')
+            ->take(10);
+
 
 
         // === 3. PASS ALL DATA TO THE VIEW ===
@@ -102,6 +106,7 @@ class AdminController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'role' => ['required', 'string', 'in:student,agent,admin'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone_number' => ['required_if:role,agent', 'nullable', 'string', 'max:20'],
             'license_number' => ['required_if:role,agent', 'nullable', 'string', 'max:255', 'unique:agents,license_number'],
 
         ]);
@@ -118,6 +123,7 @@ class AdminController extends Controller
             try {
                     Agent::create([
                         'user_id' => $user->id, // This line will now work correctly.
+                        'phone_number' => $request->phone_number,
                         'license_number' => $request->license_number,
                     ]);
                 } catch (\Exception $e) {

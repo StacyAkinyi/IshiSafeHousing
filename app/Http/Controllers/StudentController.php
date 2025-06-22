@@ -51,6 +51,7 @@ class StudentController extends Controller
             'student'            => $student,
             'availableProperties' => $availableProperties,
             'myBookings'          => $myBookings,
+            'reviewableBookings'  => $reviewableBookings,
             'myReviews'           => $myReviews,
         ]);
     }

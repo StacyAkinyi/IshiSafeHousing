@@ -369,13 +369,14 @@
 </div>
 
 
-<div id="addUserModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+<div id="addUserModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-6 border-b">
+         <div class="flex-shrink-0 p-6 border-b border-slate-200 flex justify-between items-center">
             <h2 class="text-2xl font-semibold">Add New User</h2>
             <button onclick="closeUserModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
         </div>
+        <div class="flex-1 p-6 overflow-y-auto">
         
         <!-- Modal Body (This is the "POST" part - sending data) -->
         <form action="{{ route('admin.users.store') }}" method="POST" class="p-6">
@@ -413,6 +414,10 @@
                     <label for="license_number" class="block text-sm font-medium text-slate-700">Agent License Number</label>
                     <input type="text" name="license_number" id="license_number" class="mt-1 block w-full ..." value="{{ old('license_number') }}">
                 </div>
+                <div id="phoneNumberField" class="hidden">
+                    <label for="phone_number" class="block text-sm font-medium text-slate-700">Phone Number</label>
+                    <input type="tel" name="phone_number" id="phone_number" class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm" placeholder="e.g., 0712345678" value="{{ old('phone_number') }}">
+                </div>
                  <div>
                     <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
                     <input type="password" name="password" id="password" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
@@ -421,6 +426,8 @@
                     <label for="password_confirmation" class="block text-sm font-medium text-slate-700">Confirm Password</label>
                     <input type="password" name="password_confirmation" id="password_confirmation" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm">
                 </div>
+            </div>
+        
             </div>
             
             <!-- Modal Footer -->
@@ -538,13 +545,20 @@
         });
         const roleDropdown = document.getElementById('role');
     const licenseField = document.getElementById('licenseNumberField');
+    const phoneField = document.getElementById('phoneNumberField');
 
     // Function to check the dropdown value
     const toggleLicenseField = () => {
         if (roleDropdown.value === 'agent') {
             licenseField.classList.remove('hidden'); // Show the field
+            phoneField.classList.remove('hidden');
+            licenseInput.required = true;
+            phoneInput.required = true;
         } else {
             licenseField.classList.add('hidden'); // Hide the field
+            phoneField.classList.add('hidden');
+            licenseInput.required = false;
+            phoneInput.required = false;
         }
     };
 

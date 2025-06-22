@@ -8,6 +8,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Student\AccountController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ReviewController;
 
 
 
@@ -65,6 +66,7 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
          ->name('account.updateNextOfKin');
     Route::get('/properties/{property}/rooms', [PropertyController::class, 'getRooms'])->name('properties.rooms');
     Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 
