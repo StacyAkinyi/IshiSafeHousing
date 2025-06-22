@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             <p class="text-xs font-bold text-slate-500 uppercase mb-1">Contact Agent</p>
                             <div class="flex items-center text-sm">
                                 <p class="font-semibold text-slate-700 mr-4">${agentName}</p>
-                                <a href="tel:${agentPhone}" class="text-indigo-600 hover:underline">${agentPhone}</a>
+                                <p class="text-indigo-600 ">${agentPhone}</p>
                             </div>
                         </div>
                     `;

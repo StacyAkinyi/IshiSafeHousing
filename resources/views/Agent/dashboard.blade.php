@@ -98,11 +98,63 @@
             </div>
 
             <!-- Bookings Section -->
-            <div id="bookings" class="content-section hidden">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Bookings</h2>
-                <div class="bg-white rounded-xl shadow-md p-4">
-                    
-                    <p class="text-slate-600">This area will list the bookings you have made. You will be able to edit details, update status, and manage rooms for each booking.</p>
+             <div id="bookings" class="content-section hidden">
+                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Room Bookings</h2>
+
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                <div class="bg-white rounded-xl shadow-md overflow-x-auto">
+                    <table class="min-w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-4 font-semibold">Property</th>
+                                <th class="p-4 font-semibold">Room #</th>
+                                <th class="p-4 font-semibold">Student</th>
+                                <th class="p-4 font-semibold">Dates</th>
+                                <th class="p-4 font-semibold">Status</th>
+                                <th class="p-4 font-semibold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($bookings as $booking)
+                                <tr class="border-b hover:bg-slate-50">
+                                    <td class="p-4">{{ $booking->room->property->name ?? 'N/A' }}</td>
+                                    <td class="p-4">{{ $booking->room->room_number ?? 'N/A' }}</td>
+                                    <td class="p-4">{{ $booking->student->user->name ?? 'N/A' }}</td>
+                                    <td class="p-4">{{ $booking->start_date->format('M d, Y') }} - {{ $booking->end_date->format('M d, Y') }}</td>
+                                    <td class="p-4">
+                                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
+                                            @if($booking->status == 'pending') bg-yellow-200 text-yellow-800
+                                            @elseif($booking->status == 'confirmed') bg-green-200 text-green-800
+                                            @elseif($booking->status == 'completed') bg-blue-200 text-blue-800
+                                            @else bg-red-200 text-red-800 @endif">
+                                            {{ ucfirst($booking->status) }}
+                                        </span>
+                                    </td>
+                                    <td class="p-4">
+                                        <form action="{{ route('agent.bookings.updateStatus', $booking) }}" method="POST" class="flex items-center justify-center gap-2">
+                                            @csrf
+                                            @method('PATCH')
+                                            <select name="status" class="py-1 px-2 border border-slate-300 rounded-md shadow-sm text-xs">
+                                                <option value="confirmed" @if($booking->status == 'confirmed') selected @endif>Confirmed</option>
+                                                <option value="completed" @if($booking->status == 'completed') selected @endif>Completed</option>
+                                                <option value="cancelled" @if($booking->status == 'cancelled') selected @endif>Cancelled</option>
+                                            </select>
+                                            <button type="submit" class="bg-indigo-600 text-white font-semibold text-xs py-1.5 px-3 rounded-md hover:bg-indigo-700">Update</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6" class="p-6 text-center text-slate-500">You have no bookings for your rooms yet.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
 

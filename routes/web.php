@@ -51,6 +51,7 @@ Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () 
    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
    Route::get('/properties/{property}/rooms/create', [RoomController::class, 'create'])->name('rooms.create');
    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
+   Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
 });
 
 Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {

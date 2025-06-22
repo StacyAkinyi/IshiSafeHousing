@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 class Agent extends Model
 {
      use HasFactory;
@@ -19,5 +19,10 @@ class Agent extends Model
      public function rooms(): HasMany
     {
         return $this->hasMany(Room::class);
+    }
+     public function bookings(): HasManyThrough
+    {
+        // An Agent has many Bookings through the Room model.
+        return $this->hasManyThrough(Booking::class, Room::class);
     }
 }

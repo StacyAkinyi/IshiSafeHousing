@@ -12,7 +12,7 @@ class PropertyController extends Controller
         // Eager load the rooms that are marked as available
         $availableRooms = $property->rooms()->with('images', 'agent.user')->where('is_available', true)->get();
 
-            dd($availableRooms->toArray());
+            
 
         return response()->json([
             'property_name' => $property->name,

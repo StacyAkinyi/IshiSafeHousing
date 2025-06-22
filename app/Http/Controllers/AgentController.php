@@ -20,7 +20,10 @@ class AgentController extends Controller
 
         $properties = Property::all();
         $rooms = $agent->rooms()->latest()->get(); // Fetch all rooms with their associated properties
-        $bookings = Booking::latest()->get(); // Get latest bookings
+        $bookings = $agent->bookings()
+                          ->with(['student.user', 'room.property'])
+                          ->latest('bookings.created_at')
+                          ->get();
         $reviews = Review::all();
         // Fetches all users from the database
         return view('agent.dashboard', [

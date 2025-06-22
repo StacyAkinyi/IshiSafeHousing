@@ -53,5 +53,26 @@ class BookingController extends Controller
         // 4. Redirect with a success message
         return redirect()->route('student.dashboard')->with('success', 'Booking request sent successfully!');
     }
+    public function updateStatus(Request $request, Booking $booking)
+    {
+        // AUTHORIZATION: Ensure the logged-in agent owns the room for this booking.
+        // This is a critical security check.
+        $agentId = Auth::user()->agent->id;
+        if ($booking->room->agent_id !== $agentId) {
+            abort(403, 'Unauthorized Action');
+        }
+
+        // VALIDATION: Ensure the new status is one of the allowed values.
+        $validated = $request->validate([
+            'status' => ['required', 'in:confirmed,cancelled,completed'],
+        ]);
+
+        // UPDATE: Change the booking status.
+        $booking->update(['status' => $validated['status']]);
+
+        // REDIRECT: Go back to the agent dashboard with a success message.
+        return redirect()->route('agent.dashboard')->with('success', 'Booking status updated successfully!');
+    }
+
 
 }
