@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Booking extends Model
 {
@@ -14,7 +15,7 @@ class Booking extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'user_id',
+        'student_id',
         'room_id',
         'start_date',
         'end_date',
@@ -33,4 +34,9 @@ class Booking extends Model
     {
         return $this->belongsTo(Student::class);
     }
+    public function room(): BelongsTo
+    {
+        return $this->belongsTo(Room::class);
+    }
+    
 }

@@ -6,6 +6,8 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Student\AccountController;
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\BookingController;
 
 
 
@@ -57,10 +59,11 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::put('/account', [StudentController::class, 'update'])->name('account.update');
      Route::post('/account/update-details', [StudentController::class, 'updateDetails'])
          ->name('account.updateDetails');
-
     // This route handles the next of kin form submission
     Route::post('/account/update-next-of-kin', [StudentController::class, 'updateNextOfKin'])
          ->name('account.updateNextOfKin');
+    Route::get('/properties/{property}/rooms', [PropertyController::class, 'getRooms'])->name('properties.rooms');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 });
 
 

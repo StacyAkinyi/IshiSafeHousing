@@ -32,7 +32,7 @@ class StudentController extends Controller
         }])->latest()->get();
         
         // Fetch only the bookings belonging to this student
-        $myBookings = $student->bookings()->with('property', 'room')->latest()->get();
+        $myBookings = $student->bookings()->with('room.property')->latest()->get();
         
         // Fetch only the reviews written by this student
        $myReviews = $student->reviews()->with('property')->latest()->get();

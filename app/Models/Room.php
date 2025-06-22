@@ -19,7 +19,7 @@ class Room extends Model
         'is_available',
     ];
 
-    // Optional: Define relationships to Property and Agent (User)
+   
     public function property()
     {
         return $this->belongsTo(Property::class);
