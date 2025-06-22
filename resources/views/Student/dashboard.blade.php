@@ -340,177 +340,267 @@
             </div>
         </div>
 
-        <div id="reviews" class="content-section hidden">
-            <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Reviews</h2>
-             <div class="space-y-4">
-                @forelse ($myReviews as $review)
-                    <div class="bg-white p-4 rounded-xl shadow-md">
-                        <p class="font-semibold">{{ $review->property->name ?? 'N/A' }}</p>
-                        <p class="text-slate-600 mt-1">"{{ $review->comment }}"</p>
-                        <p class="text-sm text-yellow-500 mt-2">Rating: {{ $review->rating }} / 5</p>
+<div id="reviews" class="content-section hidden">
+    <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Reviews</h2>
+
+    <div class="mb-10">
+        <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Bookings to Review</h3>
+        <div class="space-y-3">
+            @forelse ($reviewableBookings as $booking)
+                <div class="bg-white p-4 rounded-xl shadow-sm flex justify-between items-center">
+                    <div>
+                        <p class="font-semibold">{{ $booking->room->property->name ?? 'N/A' }} - Room #{{ $booking->room->room_number ?? 'N/A' }}</p>
+                        <p class="text-sm text-slate-500">Stay Completed: {{ $booking->end_date->format('M d, Y') }}</p>
                     </div>
-                @empty
-                    <p class="text-slate-600">You have not written any reviews.</p>
-                @endforelse
-            </div>
+                    <button type="button" 
+                            data-modal-target="reviewModal" 
+                            data-booking-id="{{ $booking->id }}"
+                            class="write-review-btn bg-indigo-600 text-white font-semibold text-sm py-2 px-4 rounded-lg hover:bg-indigo-700">
+                        Write a Review
+                    </button>
+                </div>
+            @empty
+                <p class="text-slate-600 p-4">You have no new bookings to review.</p>
+            @endforelse
         </div>
+    </div>
+
+    <div>
+        <h3 class="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Your Past Reviews</h3>
+        <div class="space-y-3">
+            @forelse ($myReviews as $review)
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <p class="font-semibold">{{ $review->property->name ?? 'N/A' }}</p>
+                    <div class="flex items-center my-2">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <svg class="h-5 w-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        @endfor
+                        <span class="text-xs text-slate-500 ml-2">({{ $review->created_at->diffForHumans() }})</span>
+                    </div>
+                    <p class="text-slate-600 italic">"{{ $review->description }}"</p>
+                </div>
+            @empty
+                <p class="text-slate-600 p-4">You have not written any reviews yet.</p>
+            @endforelse
+        </div>
+    </div>
+</div>
+
+<div id="reviewModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold">Write Your Review</h3>
+            <button data-modal-hide="reviewModal" class="text-2xl font-bold">&times;</button>
+        </div>
+        <form action="{{ route('reviews.store') }}" method="POST">
+            @csrf
+            <input type="hidden" name="booking_id" id="reviewBookingId">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Your Rating</label>
+                    <div class="flex items-center space-x-1 rating-stars">
+                        @for ($i = 1; $i <= 5; $i++)
+                        <label for="rating{{$i}}" class="cursor-pointer">
+                            <input type="radio" name="rating" id="rating{{$i}}" value="{{$i}}" class="sr-only" required>
+                            <svg class="w-8 h-8 text-slate-300 transition-colors" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        </label>
+                        @endfor
+                    </div>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-slate-700">Your Comments</label>
+                    <textarea name="description" id="description" rows="4" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md"></textarea>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Submit Review</button>
+            </div>
+        </form>
+    </div>
+</div>
     </main>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function () {
 
     // ===================================================================
     // 1. SETUP - Get all necessary elements from the page once.
     // ===================================================================
-    const elements = {
-        propertyDetailsModal: document.getElementById('propertyDetailsModal'),
-        propertyNameEl: document.getElementById('modalPropertyName'),
-        roomListEl: document.getElementById('modalRoomList'),
-        bookingForm: document.getElementById('bookingForm'),
-        bookingRoomIdInput: document.getElementById('bookingRoomId'),
-        bookingSubmitBtn: document.getElementById('bookingSubmitBtn'),
-        bookingInstructions: document.getElementById('bookingInstructions'),
-        sidebarLinks: document.querySelectorAll('.sidebar-link'),
-        contentSections: document.querySelectorAll('.content-section'),
-        viewDetailsButtons: document.querySelectorAll('.view-details-btn'),
-        modalHideButtons: document.querySelectorAll('[data-modal-hide]'),
-    };
+        const elements = {
+            // Elements for sidebar and sections
+            sidebarLinks: document.querySelectorAll('.sidebar-link'),
+            contentSections: document.querySelectorAll('.content-section'),
+            
+            // Elements for ALL modals
+            modalTriggers: document.querySelectorAll('[data-modal-target]'),
+            modalHideButtons: document.querySelectorAll('[data-modal-hide]'),
 
-    // This function checks if any essential element is missing
-    function validateElements() {
-        let allFound = true;
-        for (const key in elements) {
-            if (elements[key] === null || (elements[key] instanceof NodeList && elements[key].length === 0)) {
-                // Allow some elements to be optional if needed
-                if (key === 'someOptionalElement') continue;
+            // Specific elements for the property details modal
+            propertyDetailsModal: document.getElementById('propertyDetailsModal'),
+            propertyNameEl: document.getElementById('modalPropertyName'),
+            roomListEl: document.getElementById('modalRoomList'),
+            bookingForm: document.getElementById('bookingForm'),
+            bookingRoomIdInput: document.getElementById('bookingRoomId'),
+            bookingSubmitBtn: document.getElementById('bookingSubmitBtn'),
+            bookingInstructions: document.getElementById('bookingInstructions'),
+            viewDetailsButtons: document.querySelectorAll('.view-details-btn'),
 
-                console.error(`CRITICAL SCRIPT ERROR: An HTML element for '${key}' could not be found. Please check your blade file for a missing or misspelled ID/class.`);
-                allFound = false;
+        };
+        const reviewModal = document.getElementById('reviewModal');
+        if (reviewModal) {
+            const reviewBookingIdInput = reviewModal.querySelector('#reviewBookingId');
+            const writeReviewButtons = document.querySelectorAll('.write-review-btn');
+
+            writeReviewButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const bookingId = this.dataset.bookingId;
+                    reviewBookingIdInput.value = bookingId;
+                    reviewModal.classList.remove('hidden');
+                });
+            });
+
+            // Star Rating interactivity
+            const ratingStarsContainer = reviewModal.querySelector('.rating-stars');
+            if(ratingStarsContainer) {
+                const stars = ratingStarsContainer.querySelectorAll('svg');
+                ratingStarsContainer.addEventListener('change', event => {
+                    const starValue = event.target.value;
+                    if (!starValue) return;
+
+                    stars.forEach((star, index) => {
+                        star.classList.toggle('text-yellow-400', index < starValue);
+                        star.classList.toggle('text-slate-300', index >= starValue);
+                    });
+                });
             }
         }
-        return allFound;
-    }
 
-    // Stop the script if a critical element is missing
-    if (!validateElements()) {
-        console.error("Script initialization failed due to missing HTML elements. Page interactivity will be limited.");
-        return; 
-    }
+        // ===================================================================
+        // 2. EVENT LISTENERS (This section is now fixed and unified)
+        // ===================================================================
 
-    // ===================================================================
-    // 2. EVENT LISTENERS
-    // ===================================================================
-
-    // --- Sidebar Navigation ---
-    elements.sidebarLinks.forEach(link => {
-        link.addEventListener('click', function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('data-target');
-            setActiveLink(targetId);
-            showSection(targetId);
+        // --- Sidebar Navigation ---
+        elements.sidebarLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('data-target');
+                setActiveLink(targetId);
+                showSection(targetId);
+            });
         });
-    });
+        
+        // --- ALL MODAL TRIGGERS ---
+        // This single block now handles ALL buttons that open a modal.
+        elements.modalTriggers.forEach(button => {
+            button.addEventListener('click', function() {
+                const modalId = this.dataset.modalTarget;
+                const modal = document.getElementById(modalId);
 
-    // --- Property Details Modal Trigger ---
-    elements.viewDetailsButtons.forEach(button => {
+                // Check if it's the special 'View Details' button that needs to fetch data
+                if (this.classList.contains('view-details-btn')) {
+                    const propertyId = this.dataset.propertyId;
+                    openModalForProperty(propertyId);
+                } 
+                // For all other simple modals (like "Edit Details"), just show them
+                else if (modal) {
+                    modal.classList.remove('hidden');
+                }
+            });
+        });
+        
+        // --- General Modal Close Buttons ---
+        elements.modalHideButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const modalToHide = button.closest('.fixed.inset-0');
+                if(modalToHide) modalToHide.classList.add('hidden');
+            });
+        });
+         elements.viewDetailsButtons.forEach(button => {
         button.addEventListener('click', function() {
             const propertyId = this.dataset.propertyId;
             openModalForProperty(propertyId);
         });
     });
-    
-    // --- General Modal Close Buttons ---
-    elements.modalHideButtons.forEach(button => {
-        button.addEventListener('click', () => {
-             const modalToHide = button.closest('.fixed.inset-0');
-             if(modalToHide) modalToHide.classList.add('hidden');
-        });
-    });
 
-    // ===================================================================
-    // 3. FUNCTIONS
-    // ===================================================================
+        // ===================================================================
+        // 3. FUNCTIONS (These are the same as before)
+        // ===================================================================
 
-    function showSection(targetId) {
-        elements.contentSections.forEach(section => section.classList.add('hidden'));
-        const targetSection = document.getElementById(targetId);
-        if (targetSection) targetSection.classList.remove('hidden');
-    }
-
-    function setActiveLink(targetId) {
-        elements.sidebarLinks.forEach(link => link.classList.remove('active'));
-        const newActiveLink = document.querySelector(`.sidebar-link[data-target="${targetId}"]`);
-        if (newActiveLink) newActiveLink.classList.add('active');
-    }
-
-    async function openModalForProperty(propertyId) {
-        resetBookingForm(); // This function now exists (see below)
-        elements.propertyNameEl.textContent = 'Loading...';
-        elements.roomListEl.innerHTML = '<p class="text-slate-500">Fetching available rooms...</p>';
-        elements.propertyDetailsModal.classList.remove('hidden');
-
-        try {
-            const response = await fetch(`/student/properties/${propertyId}/rooms`);
-            if (!response.ok) throw new Error('Failed to fetch rooms.');
-            const data = await response.json();
-
-            elements.propertyNameEl.textContent = data.property_name;
-            elements.roomListEl.innerHTML = ''; 
-
-            if (data.rooms && data.rooms.length > 0) {
-                data.rooms.forEach(room => {
-                    const roomDiv = document.createElement('div');
-                    roomDiv.className = 'p-4 border rounded-lg';
-                    const rentValue = parseFloat(room.rent);
-                    const displayRent = !isNaN(rentValue) ? `KES ${rentValue.toLocaleString()}/month` : 'N/A';
-                    const mainImage = (room.images && room.images.length > 0) ? `/storage/${room.images[0].path}` : 'https://via.placeholder.com/300x200.png?text=No+Image';
-                    const agentName = room.agent?.user?.name || 'Not specified';
-                    const agentPhone = room.agent?.phone_number || 'Not available';
-
-
-                    roomDiv.innerHTML = `
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="md:col-span-1"><img src="${mainImage}" alt="Room Image" class="w-full h-40 object-cover rounded-md border"></div>
-                            <div class="md:col-span-2 flex flex-col">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h5 class="text-lg font-bold text-slate-800">Room #${room.room_number}</h5>
-                                    <button class="book-room-btn text-sm bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700" data-room-id="${room.id}" data-room-number="${room.room_number}">Select to Book</button>
-                                </div>
-                                <div class="flex-grow"><p class="text-sm text-slate-600 mb-3">${room.description || 'No description.'}</p></div>
-                                <div class="grid grid-cols-2 gap-4 pt-3 border-t text-sm">
-                                    <div><p class="text-xs font-bold uppercase">Rent</p><p class="font-semibold">${displayRent}</p></div>
-                                    <div><p class="text-xs font-bold uppercase">Capacity</p><p class="font-semibold">${room.capacity} Person(s)</p></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pt-3 border-t">
-                            <p class="text-xs font-bold text-slate-500 uppercase mb-1">Contact Agent</p>
-                            <div class="flex items-center text-sm">
-                                <p class="font-semibold text-slate-700 mr-4">${agentName}</p>
-                                <p class="text-indigo-600 ">${agentPhone}</p>
-                            </div>
-                        </div>
-                    `;
-                    elements.roomListEl.appendChild(roomDiv);
-                });
-                attachBookButtonListeners(); // This function now exists (see below)
-            } else {
-                elements.roomListEl.innerHTML = '<p class="text-slate-500 font-semibold">No available rooms found for this property.</p>';
-            }
-        } catch (error) {
-            elements.propertyNameEl.textContent = 'Error';
-            elements.roomListEl.innerHTML = '<p class="text-red-500">Could not load room details. Please try again.</p>';
-            console.error('Fetch error:', error);
+        function showSection(targetId) {
+            elements.contentSections.forEach(section => section.classList.add('hidden'));
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) targetSection.classList.remove('hidden');
         }
-    }
-    
-    // ===================================================================
-    // 4. MISSING HELPER FUNCTIONS (NOW ADDED)
-    // ===================================================================
 
-    function attachBookButtonListeners() {
-        document.querySelectorAll('.book-room-btn').forEach(button => {
+        function setActiveLink(targetId) {
+            elements.sidebarLinks.forEach(link => link.classList.remove('active'));
+            const newActiveLink = document.querySelector(`.sidebar-link[data-target="${targetId}"]`);
+            if (newActiveLink) newActiveLink.classList.add('active');
+        }
+
+        async function openModalForProperty(propertyId) {
+            resetBookingForm();
+            elements.propertyNameEl.textContent = 'Loading...';
+            elements.roomListEl.innerHTML = '<p class="text-slate-500">Fetching available rooms...</p>';
+            elements.propertyDetailsModal.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`/student/properties/${propertyId}/rooms`);
+                if (!response.ok) throw new Error('Failed to fetch rooms.');
+                const data = await response.json();
+
+                elements.propertyNameEl.textContent = data.property_name;
+                elements.roomListEl.innerHTML = ''; 
+
+                if (data.rooms && data.rooms.length > 0) {
+                    data.rooms.forEach(room => {
+                        const roomDiv = document.createElement('div');
+                        roomDiv.className = 'p-4 border rounded-lg';
+                        const rentValue = parseFloat(room.rent);
+                        const displayRent = !isNaN(rentValue) ? `KES ${rentValue.toLocaleString()}/month` : 'N/A';
+                        const mainImage = (room.images && room.images.length > 0) ? `/storage/${room.images[0].path}` : 'https://via.placeholder.com/300x200.png?text=No+Image';
+                        const agentName = room.agent?.user?.name || 'Not specified';
+                        const agentPhone = room.agent?.phone_number || 'Not available';
+
+                        roomDiv.innerHTML = `
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="md:col-span-1"><img src="${mainImage}" alt="Room Image" class="w-full h-40 object-cover rounded-md border"></div>
+                                <div class="md:col-span-2 flex flex-col">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <h5 class="text-lg font-bold text-slate-800">Room #${room.room_number}</h5>
+                                        <button class="book-room-btn text-sm bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-indigo-700" data-room-id="${room.id}" data-room-number="${room.room_number}">Select to Book</button>
+                                    </div>
+                                    <div class="flex-grow"><p class="text-sm text-slate-600 mb-3">${room.description || 'No description.'}</p></div>
+                                    <div class="grid grid-cols-2 gap-4 pt-3 border-t text-sm">
+                                        <div><p class="text-xs font-bold uppercase">Rent</p><p class="font-semibold">${displayRent}</p></div>
+                                        <div><p class="text-xs font-bold uppercase">Capacity</p><p class="font-semibold">${room.capacity} Person(s)</p></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t md:col-span-3">
+                                <p class="text-xs font-bold text-slate-500 uppercase mb-1">Contact Agent</p>
+                                <div class="flex items-center text-sm">
+                                    <p class="font-semibold text-slate-700 mr-4">${agentName}</p>
+                                    <a href="tel:${agentPhone}" class="text-indigo-600 hover:underline">${agentPhone}</a>
+                                </div>
+                            </div>
+                        `;
+                        elements.roomListEl.appendChild(roomDiv);
+                    });
+                    attachBookButtonListeners();
+                } else {
+                    elements.roomListEl.innerHTML = '<p class="text-slate-500 font-semibold">No available rooms found for this property.</p>';
+                }
+            } catch (error) {
+                elements.propertyNameEl.textContent = 'Error';
+                elements.roomListEl.innerHTML = '<p class="text-red-500">Could not load room details. Please try again.</p>';
+                console.error('Fetch error:', error);
+            }
+        }
+        
+        function attachBookButtonListeners() { 
+            document.querySelectorAll('.book-room-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const roomId = this.dataset.roomId;
                 const roomNumber = this.dataset.roomNumber;
@@ -526,35 +616,36 @@ document.addEventListener('DOMContentLoaded', function () {
                 this.closest('.p-4.border').classList.add('ring-2', 'ring-indigo-500');
             });
         });
-    }
 
-    function resetBookingForm() {
-        if (elements.bookingForm) elements.bookingForm.reset();
-        if (elements.bookingRoomIdInput) elements.bookingRoomIdInput.value = '';
-        if (elements.bookingSubmitBtn) {
-            elements.bookingSubmitBtn.disabled = true;
-            elements.bookingSubmitBtn.textContent = 'Select a Room First';
-            elements.bookingSubmitBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
-            elements.bookingSubmitBtn.classList.add('bg-indigo-400', 'cursor-not-allowed');
+         }
+        function resetBookingForm() {
+            if (elements.bookingForm) elements.bookingForm.reset();
+            if (elements.bookingRoomIdInput) elements.bookingRoomIdInput.value = '';
+            if (elements.bookingSubmitBtn) {
+                elements.bookingSubmitBtn.disabled = true;
+                elements.bookingSubmitBtn.textContent = 'Select a Room First';
+                elements.bookingSubmitBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                elements.bookingSubmitBtn.classList.add('bg-indigo-400', 'cursor-not-allowed');
+            }
+            if (elements.bookingInstructions) elements.bookingInstructions.textContent = 'Please select a room from the list to make a booking request.';
+            document.querySelectorAll('#modalRoomList .p-4.border').forEach(div => div.classList.remove('ring-2', 'ring-indigo-500'));
         }
-        if (elements.bookingInstructions) elements.bookingInstructions.textContent = 'Please select a room from the list to make a booking request.';
-        document.querySelectorAll('#modalRoomList .p-4.border').forEach(div => div.classList.remove('ring-2', 'ring-indigo-500'));
-    }
 
-    // ===================================================================
-    // 5. INITIAL PAGE LOAD LOGIC
-    // ===================================================================
-    const activeSectionFromSession = @json(session('active_section'));
-    if (activeSectionFromSession) {
-        setActiveLink(activeSectionFromSession);
-        showSection(activeSectionFromSession);
-    } else {
-        const defaultActiveLink = document.querySelector('.sidebar-link.active');
-        if (defaultActiveLink) {
-            showSection(defaultActiveLink.getAttribute('data-target'));
+        // ===================================================================
+        // 4. INITIAL PAGE LOAD LOGIC
+        // ===================================================================
+        const activeSectionFromSession = @json(session('active_section'));
+        if (activeSectionFromSession) {
+            setActiveLink(activeSectionFromSession);
+            showSection(activeSectionFromSession);
+        } else {
+            const defaultActiveLink = document.querySelector('.sidebar-link.active');
+            if (defaultActiveLink) {
+                showSection(defaultActiveLink.getAttribute('data-target'));
+            }
         }
-    }
 });
+
 </script>
 
 </body>

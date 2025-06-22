@@ -13,11 +13,9 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->foreignId('property_id')->constrained()->onDelete('cascade');
+            $table->foreignId('booking_id')->unique()->constrained()->onDelete('cascade');
             $table->unsignedTinyInteger('rating'); // 1-5 stars
             $table->text('description')->nullable();
-            $table->morphs('reviewable');
             $table->timestamps();
         });
     }
@@ -30,3 +28,6 @@ return new class extends Migration
         Schema::dropIfExists('reviews');
     }
 };
+
+
+

@@ -33,9 +33,18 @@ class StudentController extends Controller
         
         // Fetch only the bookings belonging to this student
         $myBookings = $student->bookings()->with('room.property')->latest()->get();
+
+        $reviewableBookings = Booking::where('student_id', $student->id)
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->whereDoesntHave('review')
+            ->with('room.property')
+            ->latest()
+            ->get();
         
         // Fetch only the reviews written by this student
-       $myReviews = $student->reviews()->with('room.property')->latest()->get();
+       $myReviews = Review::whereHas('booking', function ($query) use ($student) {
+                    $query->where('student_id', $student->id);
+                })->with('booking.room.property')->latest()->get();
 
         // Pass the data to the view
         return view('student.dashboard', [

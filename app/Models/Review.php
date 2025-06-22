@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Review extends Model
 {
-    public function property(): BelongsTo
+    protected $fillable = ['booking_id', 'rating', 'description'];
+
+    public function booking(): BelongsTo
     {
-        return $this->belongsTo(Property::class);
+        return $this->belongsTo(Booking::class);
     }
-    public function student(): BelongsTo
-    {
-        return $this->belongsTo(Student::class);
-    }
+    
 }

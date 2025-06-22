@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\Booking;
 use App\Models\Review;
 use App\Models\Room;
+use App\Models\Agent;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -13,9 +14,10 @@ use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
-    //
     public function dashboard(){
-        $agent = Auth::user();
+        
+        $user = Auth::user();
+        $agent = $user->agent;
 
 
         $properties = Property::all();
