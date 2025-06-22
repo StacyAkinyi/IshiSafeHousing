@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IshiSafeHousing - Agent Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -49,7 +50,7 @@
                     Dashboard
                 </a>
                 <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="account">
-                                    <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                     Account
                 </a>
                 <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="bookings">
@@ -84,22 +85,126 @@
             <!-- Dashboard Section -->
             <div id="dashboard" class="content-section">
                 <h2 class="text-3xl font-semibold text-slate-700 mb-6">Agent Dashboard</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Stats Cards for an Agent -->
-                     <div class="bg-white p-6 rounded-xl shadow-md">
-                        <p class="text-sm font-medium text-slate-500">Bookings</p>
-                        <p class="text-3xl font-bold text-slate-800">4</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div data-modal-target="roomsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">My Assigned Rooms</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-1">{{ $roomCount }}</p>
+                            </div>
+                            <div class="bg-blue-100 text-blue-600 p-3 rounded-full"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 012-2h3a2 2 0 012 2v14a2 2 0 01-2 2h-3a2 2 0 01-2-2V5z" /></svg></div>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-4">View by Property</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl shadow-md">
-                        <p class="text-sm font-medium text-slate-500">My Assigned Rooms</p>
-                        <p class="text-3xl font-bold text-slate-800">15</p>
+
+                    <div data-modal-target="bookingsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Total Bookings</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-1">{{ $bookingCount }}</p>
+                            </div>
+                            <div class="bg-green-100 text-green-600 p-3 rounded-full"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-4">View by Property</p>
                     </div>
-                     <div class="bg-white p-6 rounded-xl shadow-md">
-                        <p class="text-sm font-medium text-slate-500">Unread Reviews</p>
-                        <p class="text-3xl font-bold text-slate-800">8</p>
+
+                    <div data-modal-target="reviewsChartModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Total Reviews</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-1">{{ $reviewCount }}</p>
+                            </div>
+                            <div class="bg-yellow-100 text-yellow-600 p-3 rounded-full"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></div>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-4">View by Property</p>
                     </div>
                 </div>
             </div>
+
+            <div id="roomsChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-2xl">
+                    <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold">My Rooms by Property</h3><button data-modal-hide="roomsChartModal" class="text-2xl font-bold">&times;</button></div>
+                    <canvas id="roomsByPropertyChart"></canvas>
+                </div>
+            </div>
+            <div id="bookingsChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-2xl">
+                    <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold">Bookings by Property</h3><button data-modal-hide="bookingsChartModal" class="text-2xl font-bold">&times;</button></div>
+                    <canvas id="bookingsByPropertyChart"></canvas>
+                </div>
+            </div>
+            <div id="reviewsChartModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-2xl">
+                    <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-semibold">Reviews by Property</h3><button data-modal-hide="reviewsChartModal" class="text-2xl font-bold">&times;</button></div>
+                    <canvas id="reviewsByPropertyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Account Section -->
+             <div id="account" class="content-section hidden">
+                <h2 class="text-3xl font-semibold text-slate-700 mb-6">My Account</h2>
+
+                @if(session('success'))
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative mb-6" role="alert">
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-2xl font-semibold text-slate-700">My Details</h3>
+                        <button data-modal-target="agentAccountModal" class="text-sm bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded-lg hover:bg-indigo-200 transition">
+                            Edit Details
+                        </button>
+                    </div>
+                    <div class="space-y-3 text-slate-600 border-t pt-4">
+                        <div class="flex"><p class="w-1/3 font-medium text-slate-500">Full Name</p><p class="w-2/3">{{ $agent->user->name }}</p></div>
+                        <div class="flex"><p class="w-1/3 font-medium text-slate-500">Email Address</p><p class="w-2/3">{{ $agent->user->email }}</p></div>
+                        <div class="flex"><p class="w-1/3 font-medium text-slate-500">Phone Number</p><p class="w-2/3">{{ $agent->phone_number ?? 'Not provided' }}</p></div>
+                        <div class="flex"><p class="w-1/3 font-medium text-slate-500">License Number</p><p class="w-2/3">{{ $agent->license_number ?? 'Not provided' }}</p></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="agentAccountModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+                <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh]">
+                    <div class="flex justify-between items-center mb-6 border-b pb-4">
+                        <h3 class="text-xl font-semibold">Edit My Details</h3>
+                        <button data-modal-hide="agentAccountModal" class="text-2xl font-bold">&times;</button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto pr-2">
+                        <form id="agentAccountForm" action="{{ route('agent.account.update') }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium">Full Name</label>
+                                    <input type="text" name="name" value="{{ old('name', $agent->user->name) }}" required class="mt-1 block w-full px-3 py-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium">Email Address</label>
+                                    <input type="email" name="email" value="{{ old('email', $agent->user->email) }}" required class="mt-1 block w-full px-3 py-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="phone_number" class="block text-sm font-medium">Phone Number</label>
+                                    <input type="tel" name="phone_number" value="{{ old('phone_number', $agent->phone_number) }}" required class="mt-1 block w-full px-3 py-2 border rounded-md">
+                                </div>
+                                <div>
+                                    <label for="license_number" class="block text-sm font-medium">License Number</label>
+                                    <input type="text" name="license_number" value="{{ old('license_number', $agent->license_number) }}" required class="mt-1 block w-full px-3 py-2 border rounded-md">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="flex-shrink-0 flex justify-end items-center p-6 border-t mt-6">
+                        <button type="button" data-modal-hide="agentAccountModal" class="bg-slate-200 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-300">Cancel</button>
+                        <button type="submit" form="agentAccountForm" class="ml-3 bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
 
             <!-- Bookings Section -->
              <div id="bookings" class="content-section hidden">
@@ -314,6 +419,60 @@
         document.addEventListener('DOMContentLoaded', function() {
             const sidebarLinks = document.querySelectorAll('.sidebar-link');
             const contentSections = document.querySelectorAll('.content-section');
+            const roomsByPropertyData = @json($roomsByProperty);
+            const bookingsByPropertyData = @json($bookingsByProperty);
+            const reviewsByPropertyData = @json($reviewsByProperty);
+
+            const renderBarChart = (canvasId, chartData, label, color) => {
+            const labels = Object.keys(chartData);
+            const data = Object.values(chartData);
+            
+            // For the rooms chart, which has a different data structure
+            if (canvasId === 'roomsByPropertyChart') {
+                const labels = roomsByPropertyData.map(item => item.property_name);
+                const data = roomsByPropertyData.map(item => item.count);
+            }
+
+            new Chart(document.getElementById(canvasId), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        backgroundColor: color,
+                        borderColor: color,
+                        borderWidth: 1
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+            });
+        };
+        
+        // === 3. MODAL AND EVENT LISTENER LOGIC ===
+        let initializedCharts = {}; 
+
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const modalId = card.dataset.modalTarget;
+                const modal = document.getElementById(modalId);
+                if(modal) modal.classList.remove('hidden');
+
+                if (!initializedCharts[modalId]) {
+                    if (modalId === 'roomsChartModal') renderBarChart('roomsByPropertyChart', roomsByPropertyData, '# of Rooms', '#3b82f6');
+                    if (modalId === 'bookingsChartModal') renderBarChart('bookingsByPropertyChart', bookingsByPropertyData, '# of Bookings', '#10b981');
+                    if (modalId === 'reviewsChartModal') renderBarChart('reviewsByPropertyChart', reviewsByPropertyData, '# of Reviews', '#f59e0b');
+                    initializedCharts[modalId] = true;
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-modal-hide]').forEach(button => {
+            button.addEventListener('click', () => {
+                const modalToHide = button.closest('.fixed.inset-0');
+                if(modalToHide) modalToHide.classList.add('hidden');
+            });
+        });
 
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', function(event) {
