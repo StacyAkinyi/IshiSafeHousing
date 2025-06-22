@@ -465,6 +465,9 @@ document.addEventListener('DOMContentLoaded', function () {
                     const rentValue = parseFloat(room.rent);
                     const displayRent = !isNaN(rentValue) ? `KES ${rentValue.toLocaleString()}/month` : 'N/A';
                     const mainImage = (room.images && room.images.length > 0) ? `/storage/${room.images[0].path}` : 'https://via.placeholder.com/300x200.png?text=No+Image';
+                    const agentName = room.agent?.user?.name || 'Not specified';
+                    const agentPhone = room.agent?.phone_number || 'Not available';
+
 
                     roomDiv.innerHTML = `
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -479,6 +482,13 @@ document.addEventListener('DOMContentLoaded', function () {
                                     <div><p class="text-xs font-bold uppercase">Rent</p><p class="font-semibold">${displayRent}</p></div>
                                     <div><p class="text-xs font-bold uppercase">Capacity</p><p class="font-semibold">${room.capacity} Person(s)</p></div>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="pt-3 border-t">
+                            <p class="text-xs font-bold text-slate-500 uppercase mb-1">Contact Agent</p>
+                            <div class="flex items-center text-sm">
+                                <p class="font-semibold text-slate-700 mr-4">${agentName}</p>
+                                <a href="tel:${agentPhone}" class="text-indigo-600 hover:underline">${agentPhone}</a>
                             </div>
                         </div>
                     `;

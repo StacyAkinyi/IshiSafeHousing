@@ -35,7 +35,7 @@ class StudentController extends Controller
         $myBookings = $student->bookings()->with('room.property')->latest()->get();
         
         // Fetch only the reviews written by this student
-       $myReviews = $student->reviews()->with('property')->latest()->get();
+       $myReviews = $student->reviews()->with('room.property')->latest()->get();
 
         // Pass the data to the view
         return view('student.dashboard', [
