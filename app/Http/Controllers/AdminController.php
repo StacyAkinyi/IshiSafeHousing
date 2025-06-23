@@ -9,6 +9,7 @@ use App\Models\Review;
 use App\Models\Agent;
 use App\Models\Room;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,8 +21,12 @@ class AdminController extends Controller
     {
         $users = User::where('role', '!=', 'admin')->paginate(10, ['*'], 'users_page');
         $properties = Property::all();
-        $bookings = Booking::latest()->get(); // Get latest bookings
-        $reviews = Review::all();
+
+        $agent = Auth::user()->agent;
+        $bookings = $agent->bookings()->with(['student.user', 'room.property'])->latest('bookings.created_at')->get();
+        $reviews = Review::with(['booking.room.property', 'booking.student.user'])
+                     ->latest()
+                     ->get();
         
        
 
@@ -188,5 +193,13 @@ class AdminController extends Controller
         // Redirect back to the property management page with a success message
         return redirect()->route('admin.dashboard')->with('success', 'Property created successfully.');
     }
+    public function destroyBooking(Booking $booking)
+        {
+            $booking->delete();
+
+            return redirect()->route('admin.dashboard')
+                            ->with('success', 'Booking has been successfully deleted.')
+                            ->with('active_section', 'bookings'); // To re-open the bookings tab
+        }
 
 }

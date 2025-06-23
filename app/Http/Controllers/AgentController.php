@@ -19,7 +19,7 @@ class AgentController extends Controller
     public function dashboard(){
         
         $user = Auth::user();
-        $agent = $user->agent;
+        $agent = $user->agent()->with('user')->first();
 
 
         $properties = Property::all();
@@ -82,6 +82,7 @@ class AgentController extends Controller
 
         // === 3. PASS ALL DATA TO THE VIEW ===
         return view('agent.dashboard', [
+            'agent' => $agent,
             'roomCount' => $roomCount,
             'bookingCount' => $bookingCount,
             'reviewCount' => $reviewCount,
