@@ -83,6 +83,17 @@
         </div>
     </section>
 
+    <section id="map-view" class="py-16">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-3xl font-semibold text-gray-800 mb-4">Explore Our Locations</h2>
+                <p class="text-gray-600 mb-8">Get a bird's-eye view of all available properties.</p>
+            </div>
+
+            <div id="map" class="w-full h-[500px] rounded-xl shadow-lg border"></div>
+        </div>
+    </section>
+
     <section id="about" class="bg-gray-100 py-16">
         <div class="container mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center gap-8">
             <div class="md:w-1/2">
@@ -123,6 +134,57 @@
             });
         });
     });
+    </script>
+    <script>
+        const propertiesForMap = @json($propertiesForMap);
+    </script>
+
+    <script>
+        function initMap() {
+            // Default map center (e.g., Nairobi)
+            const mapCenter = { lat: -1.2921, lng: 36.8219 };
+
+            // Create the map instance
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: mapCenter,
+                mapId: 'ISHI_SAFE_HOUSING_MAP' // Optional: for custom styling in Google Cloud
+            });
+
+            // Create one info window to be reused for all markers
+            const infoWindow = new google.maps.InfoWindow();
+
+            // Loop through the properties and create a marker for each one
+            propertiesForMap.forEach(property => {
+                const position = {
+                    lat: parseFloat(property.latitude),
+                    lng: parseFloat(property.longitude)
+                };
+
+                const marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: property.name,
+                    // Optional: Add a simple animation
+                    animation: google.maps.Animation.DROP,
+                });
+
+                // Add a click listener to each marker
+                marker.addListener('click', () => {
+                    // Set the content and open the info window
+                    infoWindow.setContent(`
+                        <div class="p-2 font-sans">
+                            <p class="font-bold">${property.name}</p>
+                            <a href="/properties/${property.id}" class="text-indigo-600 hover:underline text-sm">View Rooms</a>
+                        </div>
+                    `);
+                    infoWindow.open(map, marker);
+                });
+            });
+        }
+    </script>
+
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChY6UgjP5yMfhA4te6N2N_OWsY4yssR-Q&callback=initMap&libraries=maps,marker&v=beta">
     </script>
 </body>
 </html>

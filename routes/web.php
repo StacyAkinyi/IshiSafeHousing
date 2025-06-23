@@ -9,7 +9,7 @@ use App\Http\Controllers\Student\AccountController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
-use App\Http\Controllers\SearchController;
+use App\Http\Controllers\HomeController;
 
 
 
@@ -26,10 +26,8 @@ use App\Http\Controllers\SearchController;
 
 // --- GUEST ROUTES ---
 // Accessible to everyone.
-Route::get('/', function () {
-    return view('welcome');
-});
 
+Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
 // --- AUTHENTICATED ROUTES ---
 
@@ -81,7 +79,6 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/search/rooms', [SearchController::class, 'search'])->name('rooms.search');
 Route::get('/properties/search', [PropertyController::class, 'search'])->name('properties.search');
 Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 
