@@ -22,11 +22,8 @@ class AdminController extends Controller
         $users = User::where('role', '!=', 'admin')->paginate(10, ['*'], 'users_page');
         $properties = Property::all();
 
-        $agent = Auth::user()->agent;
-        $bookings = $agent->bookings()->with(['student.user', 'room.property'])->latest('bookings.created_at')->get();
-        $reviews = Review::with(['booking.room.property', 'booking.student.user'])
-                     ->latest()
-                     ->get();
+        $bookings = Booking::with(['student.user', 'room.property'])->latest()->get();
+        $reviews = Review::with(['booking.room.property', 'booking.student.user'])->latest()->get();
         
        
 
@@ -201,5 +198,14 @@ class AdminController extends Controller
                             ->with('success', 'Booking has been successfully deleted.')
                             ->with('active_section', 'bookings'); // To re-open the bookings tab
         }
+
+        public function destroyReview(Review $review)
+            {
+                $review->delete();
+
+                return redirect()->route('admin.dashboard')
+                                ->with('success', 'Review has been successfully deleted.')
+                                ->with('active_section', 'reviews'); // To re-open the reviews tab
+            }
 
 }

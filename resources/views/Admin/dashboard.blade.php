@@ -551,7 +551,7 @@
                                 <th class="p-4 font-semibold text-center">Rating</th>
                                 <th class="p-4 font-semibold">Comment</th>
                                 <th class="p-4 font-semibold">Date</th>
-                            </tr>
+                                <th class="p-4 font-semibold text-center">Action</th> </tr>
                         </thead>
                         <tbody>
                             @forelse ($reviews as $review)
@@ -569,6 +569,16 @@
                                     "{{ $review->description }}"
                                     </td>
                                     <td class="p-4 align-top text-slate-500">{{ $review->created_at->format('M d, Y') }}</td>
+
+                                    <td class="p-4 align-top text-center">
+                                        <form action="{{ route('admin.reviews.destroy', $review) }}" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete this review?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

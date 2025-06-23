@@ -65,41 +65,21 @@
         </div>
     </section>
 
-    <section id="listings" class="py-16">
+    <section id="listings" class="py-16 bg-gray-50">
         <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-semibold text-gray-800 mb-8 text-center">Latest Listings</h2>
-             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <img src="https://source.unsplash.com/featured/?apartment" alt="Apartment 1" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-indigo-600 mb-2">Cozy Apartment Near Campus</h3>
-                        <p class="text-gray-700 mb-2">Price: $500/month</p>
-                        <p class="text-gray-600 mb-4">1 Bedroom, 1 Bathroom</p>
-                        <a href="#" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full transition duration-300">View Details</a>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <img src="https://source.unsplash.com/featured/?house" alt="House 2" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-indigo-600 mb-2">Shared House for Students</h3>
-                        <p class="text-gray-700 mb-2">Price: $300/month/room</p>
-                        <p class="text-gray-600 mb-4">4 Bedrooms, 2 Bathrooms</p>
-                        <a href="#" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full transition duration-300">View Details</a>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <img src="https://source.unsplash.com/featured/?dorm" alt="Dorm 3" class="w-full h-48 object-cover">
-                    <div class="p-6">
-                        <h3 class="text-xl font-semibold text-indigo-600 mb-2">Student Dormitory</h3>
-                        <p class="text-gray-700 mb-2">Price: $600/month</p>
-                        <p class="text-gray-600 mb-4">Single Room, Shared Bathroom</p>
-                        <a href="#" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-full transition duration-300">View Details</a>
-                    </div>
-                </div>
+            <div class="text-center max-w-2xl mx-auto">
+                <h2 class="text-3xl font-semibold text-gray-800 mb-4">Find Your Next Room</h2>
+                <p class="text-gray-600 mb-8">Start by searching for a city to find available properties and rooms.</p>
             </div>
-             <div class="mt-8 text-center">
-                <a href="#" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full transition duration-300 text-lg">See All Listings</a>
-            </div>
+
+            <form id="propertySearchForm" action="{{ route('properties.search') }}" method="GET" class="max-w-2xl mx-auto">
+                <div class="relative">
+                    <input type="search" name="city" required placeholder="Enter a city name, e.g., Nairobi" class="w-full pl-4 pr-12 py-4 text-lg border border-slate-300 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button type="submit" class="absolute inset-y-0 right-0 flex items-center justify-center w-16 h-full text-white bg-indigo-500 rounded-full hover:bg-indigo-600">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </button>
+                </div>
+            </form>
         </div>
     </section>
 
@@ -133,6 +113,7 @@
     </footer>
 
     <script>
+        
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();

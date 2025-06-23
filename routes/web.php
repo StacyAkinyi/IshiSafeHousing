@@ -9,6 +9,7 @@ use App\Http\Controllers\Student\AccountController;
 use App\Http\Controllers\PropertyController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\SearchController;
 
 
 
@@ -44,7 +45,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/properties', [AdminController::class, 'manageProperties'])->name('properties');
     Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
     Route::delete('/bookings/{booking}', [AdminController::class, 'destroyBooking'])->name('bookings.destroy');
-    
+    Route::delete('/reviews/{review}', [AdminController::class, 'destroyReview'])->name('reviews.destroy');
     });
 
 
@@ -79,4 +80,8 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/search/rooms', [SearchController::class, 'search'])->name('rooms.search');
+Route::get('/properties/search', [PropertyController::class, 'search'])->name('properties.search');
+Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 
