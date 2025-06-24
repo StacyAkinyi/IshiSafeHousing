@@ -44,6 +44,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
     Route::delete('/bookings/{booking}', [AdminController::class, 'destroyBooking'])->name('bookings.destroy');
     Route::delete('/reviews/{review}', [AdminController::class, 'destroyReview'])->name('reviews.destroy');
+    Route::get('/properties/{property}/rooms', [AdminController::class, 'getPropertyRooms'])->name('properties.getRooms');
     });
 
 

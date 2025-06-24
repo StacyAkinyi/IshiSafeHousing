@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\Review;
 use App\Models\Agent;
 use App\Models\Room;
+use App\Models\NextOfKin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,11 +21,11 @@ class AdminController extends Controller
     public function dashboard()
     {
         $users = User::where('role', '!=', 'admin')->paginate(10, ['*'], 'users_page');
-        $properties = Property::all();
+        $properties = Property::withCount('rooms')->latest()->get(); // <-- ADD withCount('rooms')
 
         $bookings = Booking::with(['student.user', 'room.property'])->latest()->get();
         $reviews = Review::with(['booking.room.property', 'booking.student.user'])->latest()->get();
-        
+        $nextOfKinDetails = NextOfKin::with('student.user')->latest()->get();
        
 
         // === 1. DATA FOR STATISTIC CARDS ===
@@ -88,6 +89,7 @@ class AdminController extends Controller
             'properties' => $properties,
             'bookings' => $bookings,
             'reviews' => $reviews,
+            'nextOfKinDetails' => $nextOfKinDetails,
             
         ]);
     }
@@ -207,5 +209,17 @@ class AdminController extends Controller
                                 ->with('success', 'Review has been successfully deleted.')
                                 ->with('active_section', 'reviews'); // To re-open the reviews tab
             }
+
+        public function getPropertyRooms(Property $property)
+        {
+            // Eager load the agent and their user details for each room
+            $rooms = $property->rooms()->with('agent.user')->get();
+
+            // Also pass back the property name for the modal title
+            return response()->json([
+                'property_name' => $property->name,
+                'rooms' => $rooms
+            ]);
+        }
 
 }

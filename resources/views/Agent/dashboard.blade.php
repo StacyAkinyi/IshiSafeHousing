@@ -309,9 +309,55 @@
                             </span>
                         </td>
                         <td class="p-4 space-x-2">
-                            <button class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
+                            <button type="button" data-modal-target="editRoomModal-{{ $room->id }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
                         </td>
                     </tr>
+                    <div id="editRoomModal-{{ $room->id }}" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl">
+                <div class="flex justify-between items-center p-6 border-b">
+                    <h2 class="text-2xl font-semibold text-slate-800">Edit Room: {{ $room->room_number }}</h2>
+                    <button data-modal-hide="editRoomModal-{{ $room->id }}" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+                </div>
+                
+                <form action="{{ route('agent.rooms.update', $room) }}" method="POST" class="p-6">
+                    @csrf
+                    @method('PATCH')
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-1">
+                            <label for="room_number-{{$room->id}}" class="block text-sm font-medium text-slate-700">Room Number / Name</label>
+                            <input type="text" name="room_number" id="room_number-{{$room->id}}" value="{{ old('room_number', $room->room_number) }}" required class="mt-1 block w-full ...">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="rent-{{$room->id}}" class="block text-sm font-medium text-slate-700">Monthly Rent: Kshs</label>
+                            <input type="number" name="rent" id="rent-{{$room->id}}" value="{{ old('rent', $room->rent) }}" step="0.01" class="mt-1 block w-full ...">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="capacity-{{$room->id}}" class="block text-sm font-medium text-slate-700">Capacity (Persons)</label>
+                            <input type="number" name="capacity" id="capacity-{{$room->id}}" value="{{ old('capacity', $room->capacity) }}" required min="1" class="mt-1 block w-full ...">
+                        </div>
+                         <div class="md:col-span-2">
+                            <label for="description-{{$room->id}}" class="block text-sm font-medium text-slate-700">Description</label>
+                            <textarea name="description" id="description-{{$room->id}}" rows="3" class="mt-1 block w-full ...">{{ old('description', $room->description) }}</textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="is_available-{{$room->id}}" class="inline-flex items-center">
+                                <input id="is_available-{{$room->id}}" type="checkbox" name="is_available" value="1" @if($room->is_available) checked @endif class="rounded ...">
+                                <span class="ml-2 text-sm text-gray-600">Mark as Available</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end items-center pt-6 mt-4 border-t">
+                        <button type="button" data-modal-hide="editRoomModal-{{ $room->id }}" class="bg-slate-100 ...">Cancel</button>
+                        <button type="submit" class="bg-blue-600 text-white ...">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div> 
+
+
+
                 @empty
                     <tr>
                         <td colspan="6" class="p-4 text-center text-slate-500">No rooms found. Add one to get started.</td>
@@ -446,98 +492,143 @@
         </main>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebarLinks = document.querySelectorAll('.sidebar-link');
-            const contentSections = document.querySelectorAll('.content-section');
-            const roomsByPropertyData = @json($roomsByProperty);
-            const bookingsByPropertyData = @json($bookingsByProperty);
-            const reviewsByPropertyData = @json($reviewsByProperty);
+<script>
+document.addEventListener('DOMContentLoaded', function () {
 
-            const renderBarChart = (canvasId, chartData, label, color) => {
-            const labels = Object.keys(chartData);
-            const data = Object.values(chartData);
-            
-            // For the rooms chart, which has a different data structure
-            if (canvasId === 'roomsByPropertyChart') {
-                const labels = roomsByPropertyData.map(item => item.property_name);
-                const data = roomsByPropertyData.map(item => item.count);
-            }
+    // ===================================================================
+    // 1. SETUP - Get all necessary data and elements from the page once.
+    // ===================================================================
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const contentSections = document.querySelectorAll('.content-section');
+    const modalTriggers = document.querySelectorAll('[data-modal-target]');
+    const modalHides = document.querySelectorAll('[data-modal-hide]');
 
-            new Chart(document.getElementById(canvasId), {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        backgroundColor: color,
-                        borderColor: color,
-                        borderWidth: 1
-                    }]
-                },
-                options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-            });
-        };
+    // Data from Laravel for the charts
+    const roomsByPropertyData = @json($roomsByProperty);
+    const bookingsByPropertyData = @json($bookingsByProperty);
+    const reviewsByPropertyData = @json($reviewsByProperty);
+
+    // To keep track of charts that have already been created
+    let initializedCharts = {};
+
+    // ===================================================================
+    // 2. FUNCTIONS - Reusable logic for the page.
+    // ===================================================================
+
+    function showSection(targetId) {
+        contentSections.forEach(section => section.classList.add('hidden'));
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) targetSection.classList.remove('hidden');
+    }
+
+    function setActiveLink(targetId) {
+        sidebarLinks.forEach(link => link.classList.remove('active'));
+        const newActiveLink = document.querySelector(`.sidebar-link[data-target="${targetId}"]`);
+        if (newActiveLink) newActiveLink.classList.add('active');
+    }
+
+    // This function now correctly handles the different data structures for the charts
+    function renderBarChart(canvasId, chartData, label, color) {
+        let chartLabels;
+        let chartValues;
+
+        // The 'roomsByProperty' data has a different structure, so we handle it specifically
+        if (canvasId === 'roomsByPropertyChart') {
+            chartLabels = chartData.map(item => item.property_name);
+            chartValues = chartData.map(item => item.count);
+        } else {
+            // All other charts use the simple key-value structure
+            chartLabels = Object.keys(chartData);
+            chartValues = Object.values(chartData);
+        }
         
-        // === 3. MODAL AND EVENT LISTENER LOGIC ===
-        let initializedCharts = {}; 
+        const ctx = document.getElementById(canvasId);
+        if(!ctx) return; // Don't try to render if canvas isn't there
 
-        document.querySelectorAll('.stat-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const modalId = card.dataset.modalTarget;
-                const modal = document.getElementById(modalId);
-                if(modal) modal.classList.remove('hidden');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: label,
+                    data: chartValues,
+                    backgroundColor: color,
+                    borderColor: color,
+                    borderWidth: 1
+                }]
+            },
+            options: { 
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { stepSize: 1 } 
+                    } 
+                } 
+            }
+        });
+    }
 
-                if (!initializedCharts[modalId]) {
+    // ===================================================================
+    // 3. EVENT LISTENERS - Making the page interactive.
+    // ===================================================================
+
+    // --- Sidebar Navigation ---
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('data-target');
+            setActiveLink(targetId);
+            showSection(targetId);
+        });
+    });
+
+    // --- All Modal "Open" Buttons ---
+    modalTriggers.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalId = button.dataset.modalTarget;
+            const modal = document.getElementById(modalId);
+            
+            if (modal) {
+                modal.classList.remove('hidden');
+
+                // If the button was a stat card, render the chart (only once)
+                if (button.classList.contains('stat-card') && !initializedCharts[modalId]) {
                     if (modalId === 'roomsChartModal') renderBarChart('roomsByPropertyChart', roomsByPropertyData, '# of Rooms', '#3b82f6');
                     if (modalId === 'bookingsChartModal') renderBarChart('bookingsByPropertyChart', bookingsByPropertyData, '# of Bookings', '#10b981');
                     if (modalId === 'reviewsChartModal') renderBarChart('reviewsByPropertyChart', reviewsByPropertyData, '# of Reviews', '#f59e0b');
                     initializedCharts[modalId] = true;
                 }
-            });
+            } else {
+                console.error(`Error: Modal with ID '${modalId}' not found.`);
+            }
         });
+    });
 
-        document.querySelectorAll('[data-modal-hide]').forEach(button => {
-            button.addEventListener('click', () => {
-                const modalToHide = button.closest('.fixed.inset-0');
-                if(modalToHide) modalToHide.classList.add('hidden');
-            });
+    // --- All Modal "Close" Buttons ---
+    modalHides.forEach(button => {
+        button.addEventListener('click', () => {
+            const modalToHide = button.closest('.fixed.inset-0');
+            if (modalToHide) {
+                modalToHide.classList.add('hidden');
+            }
         });
+    });
 
-            sidebarLinks.forEach(link => {
-                link.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const targetId = this.dataset.target;
-
-                    // Hide all content sections
-                    contentSections.forEach(section => {
-                        section.classList.add('hidden');
-                    });
-
-                    // Show the target content section
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        targetSection.classList.remove('hidden');
-                    }
-
-                    // Update active class on sidebar links
-                    sidebarLinks.forEach(s_link => {
-                        s_link.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-        });
-
-        function openRoomModal() {
-        document.getElementById('addRoomModal').classList.remove('hidden');
+    // ===================================================================
+    // 4. INITIAL PAGE LOAD LOGIC - Show the correct tab.
+    // ===================================================================
+    const activeSectionFromSession = @json(session('active_section'));
+    if (activeSectionFromSession) {
+        setActiveLink(activeSectionFromSession);
+        showSection(activeSectionFromSession);
+    } else {
+        const defaultActiveLink = document.querySelector('.sidebar-link.active');
+        if (defaultActiveLink) {
+            showSection(defaultActiveLink.getAttribute('data-target'));
         }
-
-        function closeRoomModal() {
-            document.getElementById('addRoomModal').classList.add('hidden');
-        }
-    </script>
+    }
+});
+</script>
 
 </body>
 </html>
