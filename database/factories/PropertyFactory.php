@@ -23,7 +23,7 @@ class PropertyFactory extends Factory
             'city' => $this->faker->city(),
             'description' => $this->faker->paragraph(3),
             'status' => $this->faker->randomElement(['available', 'full', 'under_maintenance']),
-            'latitude' => $this->faker->latitude(-1.4, -1.2), // Generates coordinates around Nairobi
+            'latitude' => $this->faker->latitude(-1.4, -1.2),
             'longitude' => $this->faker->longitude(36.7, 36.9),
 
         ];

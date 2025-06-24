@@ -17,7 +17,15 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'full_name' => fake()->name(),
+            'phone_number' => fake()->unique()->phoneNumber(),
         ];
+    }
+
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Student $student) {
+            NextOfKin::factory()->create(['student_id' => $student->id]);
+        });
     }
 }

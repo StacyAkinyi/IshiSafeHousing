@@ -17,7 +17,8 @@ class AgentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'phone_number' => fake()->unique()->phoneNumber(),
+            'license_number' => fake()->unique()->bothify('AG-#######'),
         ];
     }
 }
