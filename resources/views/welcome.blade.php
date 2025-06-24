@@ -37,8 +37,8 @@
             <p class="text-lg text-gray-700 mb-8">A safe, reliable, and convenient platform to connect students with verified housing options.</p>
             <a href="#listings" class="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-3 rounded-full transition duration-300 text-lg">Get Started</a>
         </div>
-        <div class="md:w-1/2">
-            <img src="https://source.unsplash.com/featured/?student,housing" alt="Student Housing" class="rounded-xl shadow-lg">
+        <div class="md:w-3/4">
+            <img src="{{ asset('images/prop4.jpeg') }}" alt="Student Housing" class="rounded-xl shadow-lg">
         </div>
     </main>
 
@@ -97,7 +97,7 @@
     <section id="about" class="bg-gray-100 py-16">
         <div class="container mx-auto px-4 md:px-8 flex flex-col md:flex-row items-center gap-8">
             <div class="md:w-1/2">
-                <img src="https://source.unsplash.com/featured/?university" alt="About Us" class="rounded-xl shadow-lg">
+                <img src="{{ asset('images/prop5.jpeg') }}">
             </div>
             <div class="md:w-1/2">
                 <h2 class="text-3xl font-semibold text-gray-800 mb-6">About Student Housing Hub</h2>

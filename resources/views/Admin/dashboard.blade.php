@@ -122,8 +122,22 @@
                             </div>
                         </div>
                     </div>
+
+                     <div data-modal-target="bookingsAnalyticsModal" class="stat-card bg-white p-6 rounded-xl shadow-md cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">Total Bookings</p>
+                                <p class="text-3xl font-bold text-slate-800 mt-1">{{ $bookingCount }}</p>
+                            </div>
+                            <div class="bg-green-100 text-green-600 p-3 rounded-full"><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></div>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-4">View Status & Property Breakdown</p>
+                    </div>
+
                 </div>
-            </div> 
+                </div>
+
+
 
             <!-- Modals for Charts (Placed outside the main content section) -->
 
@@ -170,6 +184,24 @@
                     <canvas id="reviewsChart"></canvas>
                 </div>
             </div>
+
+             <div id="bookingsAnalyticsModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
+                <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-4xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-semibold">Bookings Analytics</h3>
+                        <button data-modal-hide="bookingsAnalyticsModal" class="text-2xl font-bold">&times;</button>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-center font-semibold mb-2">By Status</h4>
+                                <canvas id="bookingsByStatusChart"></canvas>
+                                </div>
+                               
+                            </div>
+                </div>
+            </div>
+            
+    
 
             <!-- Properties Section -->
             <div id="properties" class="content-section hidden">
@@ -424,7 +456,7 @@
                             </span>
                         </td>
                         <td class="p-4 space-x-2">
-                            <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold edit-user-btn" data-user="@json($user)">Edit</button>
+                            <button onclick='openEditModal(@json($user))' type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold edit-user-btn" >Edit</button>
                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
                                 @csrf
                                 @method('DELETE')
@@ -528,6 +560,8 @@
     </div>
 
     <form id="editUserForm" method="POST" class="p-6">
+        @csrf
+        @method('PATCH') 
       <input type="hidden" name="_token" value="{{ csrf_token() }}">
       <input type="hidden" name="_method" value="PUT">
 
@@ -656,17 +690,35 @@
         </main>
     </div>
 
-
-
-   
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', function () {
         const links = document.querySelectorAll('.sidebar-link');
         const sections = document.querySelectorAll('.content-section');
 
         const roomsModal = document.getElementById('roomsListModal');
-            const modalPropertyNameEl = roomsModal.querySelector('#modalPropertyName');
-            const modalRoomListContainer = roomsModal.querySelector('#modalRoomListContainer');
+        const modalPropertyNameEl = roomsModal.querySelector('#modalPropertyName');
+        const modalRoomListContainer = roomsModal.querySelector('#modalRoomListContainer');
+
+        const modalTriggers = document.querySelectorAll('[data-modal-target]');
+        const modalHides = document.querySelectorAll('[data-modal-hide]');
+        
+        // --- Event Listeners ---
+        // General listener for buttons that OPEN modals
+        modalTriggers.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = document.getElementById(button.dataset.modalTarget);
+                if(modal) modal.classList.remove('hidden');
+            });
+        });
+
+        // General listener for buttons that CLOSE modals
+        modalHides.forEach(button => {
+            button.addEventListener('click', () => {
+                const modal = document.getElementById(button.dataset.modalHide);
+                if(modal) modal.classList.add('hidden');
+            });
+        });
+    
 
             // Listen for clicks on ANY 'View Rooms' button
             document.querySelectorAll('.view-rooms-btn').forEach(button => {
@@ -807,8 +859,28 @@
     const propertiesWithRoomCount = @json($propertiesWithRoomCount);
     const roomStatusData = @json($roomStatusData);
     const propertiesWithReviewCount = @json($propertiesWithReviewCount);
+    const bookingsByStatusData = @json($bookingsByStatus ?? []);
+    
 
     // === 2. CHART RENDERING FUNCTIONS ===
+
+    const renderBookingStatusChart = () => {
+        new Chart(document.getElementById('bookingsByStatusChart'), {
+            type: 'doughnut',
+            data: {
+                labels: bookingsByStatusData.map(row => row.status.charAt(0).toUpperCase() + row.status.slice(1)),
+                datasets: [{
+                    label: 'Booking Statuses',
+                    data: bookingsByStatusData.map(row => row.count),
+                    backgroundColor: ['#FBBF24', '#10B981', '#EF4444', '#3B82F6'], // Yellow, Green, Red, Blue
+                    hoverOffset: 4
+                }]
+            }
+        });
+    };
+
+       
+
 
     // Chart for User Roles (Doughnut Chart)
     const renderUserChart = () => {
@@ -904,11 +976,18 @@
                     if (modalId === 'propertiesChartModal') renderPropertiesChart();
                     if (modalId === 'roomsChartModal') renderRoomStatusChart();
                     if (modalId === 'reviewsChartModal') renderReviewsChart();
+
+                    if (modalId === 'bookingsAnalyticsModal') {
+                            renderBookingStatusChart();
+                           
+                        }
                     initializedCharts[modalId] = true; // Mark chart as initialized
                 }
             }
         });
     });
+
+    
 
     // This adds functionality to all the 'close' buttons in the modals
     document.querySelectorAll('[data-modal-hide]').forEach(button => {
@@ -924,9 +1003,8 @@
     // Add an event listener to the dropdown
     roleDropdown.addEventListener('change', toggleLicenseField);
 
-    // Run it once on page load in case of validation errors
-    toggleLicenseField();
-    });
+});
+    
      // --- User Modals ---
     function openUserModal() {
         document.getElementById('addUserModal').classList.remove('hidden');
@@ -958,6 +1036,7 @@
     function closePropModal() {
         document.getElementById('addPropertyModal').classList.add('hidden');
     }
+    
 
     </script>
 </body>

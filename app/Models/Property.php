@@ -34,5 +34,9 @@ class Property extends Model
     {
         return $this->hasManyThrough(Review::class, Booking::class, 'room_id', 'booking_id', 'id', 'id');
     }
+    public function bookings(): HasManyThrough
+    {
+        return $this->hasManyThrough(Booking::class, Room::class);
+    }
    
 }

@@ -33,6 +33,7 @@ class AdminController extends Controller
         $propertyCount = Property::count();
         $roomCount = Room::count();
         $reviewCount = Review::count();
+        $bookingCount = Booking::count();
 
         // === 2. DATA FOR GRAPHS ===
 
@@ -62,11 +63,31 @@ class AdminController extends Controller
         $allPropertiesWithReviews = Property::whereHas('reviews')
             ->withCount('reviews')
             ->get();
+            
+         $reviewsByProperty = Property::whereHas('reviews')
+            ->withCount('reviews')
+            ->orderBy('reviews_count', 'desc')
+            ->take(10)
+            ->get()
+            ->map(fn($p) => ['label' => $p->name, 'value' => $p->reviews_count]);    
 
         // Step 2: Sort the results in PHP and take the top 10.
         $propertiesWithReviewCount = $allPropertiesWithReviews
             ->sortByDesc('reviews_count')
             ->take(10);
+
+        $bookingsByStatus = Booking::select('status', DB::raw('count(*) as count'))
+        ->groupBy('status')
+        ->get();
+        
+
+        // Graph 2: Get the booking count for each property (Top 10)
+        $bookingsByProperty = Property::withCount('bookings')
+            ->whereHas('bookings')
+            ->orderBy('bookings_count', 'desc')
+            ->take(10)
+            ->get()
+             ->map(fn($p) => ['label' => $p->name, 'value' => $p->bookings_count]);    
 
 
 
@@ -77,12 +98,17 @@ class AdminController extends Controller
             'propertyCount' => $propertyCount,
             'roomCount' => $roomCount,
             'reviewCount' => $reviewCount,
+            'bookingCount' => $bookingCount,
 
             // Data for Graphs
             'userRoleData' => $userRoleData,
             'propertiesWithRoomCount' => $propertiesWithRoomCount,
             'roomStatusData' => $roomStatusData,
             'propertiesWithReviewCount' => $propertiesWithReviewCount,
+            'bookingsByStatus' => $bookingsByStatus,       // <-- ADD THIS
+            'bookingsByProperty' => $bookingsByProperty,
+            'reviewsByProperty' => $reviewsByProperty,
+            'allPropertiesWithReviews' => $allPropertiesWithReviews,
 
             // Other data for the dashboard
              'users' => $users,  
