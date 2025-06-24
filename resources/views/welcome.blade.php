@@ -35,7 +35,7 @@
         <div class="text-center md:text-left">
             <h1 class="text-4xl font-bold text-gray-800 mb-4">Find Your Ideal Student Housing</h1>
             <p class="text-lg text-gray-700 mb-8">A safe, reliable, and convenient platform to connect students with verified housing options.</p>
-            <a href="#listings" class="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-3 rounded-full transition duration-300 text-lg">Get Started</a>
+            <a href="{{route('register')}}" class="bg-indigo-500 hover:bg-indigo-600 text-white px-8 py-3 rounded-full transition duration-300 text-lg">Get Started</a>
         </div>
         <div class="md:w-3/4">
             <img src="{{ asset('images/prop4.jpeg') }}" alt="Student Housing" class="rounded-xl shadow-lg">

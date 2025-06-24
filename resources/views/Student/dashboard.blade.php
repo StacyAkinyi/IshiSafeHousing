@@ -36,10 +36,7 @@
                <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                 My Reviews
             </a>
-            <a href="#" class="sidebar-link flex items-center py-3 px-4 rounded-lg transition duration-200 hover:bg-slate-700" data-target="maps">
-                <svg class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.25c-.317-.159-.69-.159-1.006 0L4.875 5.184c-.381-.19-.622-.58-.622-1.006V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
-                Maps
-            </a>
+
         </nav>
 
         <div class="px-4 py-6">
@@ -228,22 +225,7 @@
                             <div class="flex-grow">
                                 <h3 class="font-semibold text-lg">{{ $property->name }}</h3>
                                 <p class="text-sm text-slate-600">{{ $property->city }}</p>
-                                 <div class="flex items-center mt-2">
-                                    @if ($property->total_reviews_count > 0)
-                                        <div class="flex items-center">
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                <svg class="h-4 w-4 {{ $i <= round($property->average_rating) ? 'text-yellow-400' : 'text-slate-300' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
-                                            @endfor
-                                        </div>
-                                        <p class="text-xs text-slate-500 ml-2">
-                                            {{-- Use reviews_avg_rating and reviews_count --}}
-                                            {{ number_format($property->reviews_avg_rating, 1) }} out of 5 
-                                            ({{ $property->reviews_count }} {{ Str::plural('review', $property->reviews_count) }})
-                                        </p>
-                                    @else
-                                        <p class="text-xs text-slate-500">No reviews yet</p>
-                                    @endif
-                                </div>
+                                 
                                 <p class="text-sm text-slate-800 mt-2 font-bold">{{ $property->rooms_count }} available room(s)</p>
                             </div>
                             <div class="mt-4">
@@ -430,16 +412,15 @@
     </div>
 </div>
 
-           <div id="maps" class="content-section hidden">
-                <h2 class="text-3xl font-semibold text-slate-700 mb-6">Available Properties Map</h2>
-                <div class="bg-white rounded-xl shadow-md p-4">
-                    <div id="student-map" class="w-full h-[600px] rounded-lg border"></div>
-                </div>
-            </div>
+           
     </main>
 </div>
 
-<script> const studentMapProperties = @json($availableProperties);</script>
+<footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© {{ date('Y') }} Ishi Safe Housing. All rights reserved.</p>
+        </div>
+    </footer>
 
 <script>
      function initStudentMap() {

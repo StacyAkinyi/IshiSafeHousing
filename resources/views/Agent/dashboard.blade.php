@@ -491,7 +491,11 @@
 
         </main>
     </div>
-
+<footer class="bg-gray-800 text-white py-6">
+        <div class="container mx-auto px-4 text-center">
+            <p>© {{ date('Y') }} Ishi Safe Housing. All rights reserved.</p>
+        </div>
+    </footer>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
