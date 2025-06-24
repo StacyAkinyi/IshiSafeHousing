@@ -18,8 +18,7 @@ class AgentController extends Controller
 {
     public function dashboard(){
         
-        $user = Auth::user();
-        $agent = $user->agent()->with('user')->first();
+        $agent = Auth::user()->agent;
 
 
         $properties = Property::all();
@@ -79,6 +78,13 @@ class AgentController extends Controller
                 return $group->count();
             });
 
+        $roomsWithReviews = Room::where('agent_id', $agent->id)
+                            ->whereHas('bookings.review') // Only get rooms that have reviews
+                            ->with(['reviews.booking.student.user', 'property'])
+                            ->get();
+
+
+
 
         // === 3. PASS ALL DATA TO THE VIEW ===
         return view('agent.dashboard', [
@@ -92,6 +98,7 @@ class AgentController extends Controller
             'bookings' => $agent->bookings()->with(['student.user', 'room.property'])->latest('bookings.created_at')->get(),
             'properties' => $properties,
             'rooms' => $rooms,
+            'roomsWithReviews' => $roomsWithReviews,
         ]);
     }
 

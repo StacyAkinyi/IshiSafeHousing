@@ -10,6 +10,7 @@ use App\Models\Review;
 use App\Models\NextOfKin;
 use App\Models\Student; 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -25,12 +26,38 @@ class StudentController extends Controller
         $student->load('nextOfKin', 'user');
 
         // Fetch all properties with available rooms to show to the student
-        $availableProperties = Property::whereHas('rooms', function ($query) {
+        $availableProperties = Property::query()
+        ->whereNotNull('latitude') 
+        ->whereNotNull('longitude')
+        // We still count available rooms for the display text
+        ->withCount(['rooms' => function ($query) {
             $query->where('is_available', true);
-        })->withCount(['rooms' => function ($query) {
-            $query->where('is_available', true);
-        }])->latest()->get();
+        }])
         
+        // This subquery will correctly calculate the total number of reviews
+        ->selectSub(function ($query) {
+            $query->from('reviews')
+                ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+                ->join('rooms', 'bookings.room_id', '=', 'rooms.id')
+                ->whereColumn('rooms.property_id', 'properties.id')
+                ->selectRaw('count(*)');
+        }, 'reviews_count')
+
+        // This subquery will correctly calculate the average rating
+        ->selectSub(function ($query) {
+            $query->from('reviews')
+                ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+                ->join('rooms', 'bookings.room_id', '=', 'rooms.id')
+                ->whereColumn('rooms.property_id', 'properties.id')
+                ->selectRaw('avg(rating)');
+        }, 'reviews_avg_rating')
+
+        // This part remains the same
+        ->having('rooms_count', '>', 0)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+
         // Fetch only the bookings belonging to this student
         $myBookings = $student->bookings()->with('room.property')->latest()->get();
 

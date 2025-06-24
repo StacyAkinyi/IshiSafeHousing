@@ -42,7 +42,7 @@ class Room extends Model
     }
     public function reviews(): HasManyThrough
     {
-        // A Room has many Reviews through the Booking model
+        // A Room has many Reviews through the Booking model.
         return $this->hasManyThrough(Review::class, Booking::class);
     }
 }

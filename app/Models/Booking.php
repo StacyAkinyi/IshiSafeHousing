@@ -44,9 +44,6 @@ class Booking extends Model
     {
         return $this->hasOne(Review::class);
     }
-    public function reviews(): HasManyThrough
-    {
-        return $this->hasManyThrough(Review::class, Booking::class);
-    }
+    
     
 }

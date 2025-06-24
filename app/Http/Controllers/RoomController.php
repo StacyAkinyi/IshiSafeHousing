@@ -70,6 +70,31 @@ class RoomController extends Controller
 
             return view('rooms.index', compact('rooms'));
         }
+        public function update(Request $request, Room $room)
+        {
+            // AUTHORIZATION: Ensure the logged-in agent owns the room they are trying to edit.
+            if ($room->agent_id !== Auth::user()->agent->id) {
+                abort(403, 'Unauthorized Action');
+            }
+
+            // VALIDATION: Validate the incoming data.
+            $validated = $request->validate([
+                // The 'unique' rule must ignore the current room's ID to avoid errors.
+                'room_number' => ['required', 'string', 'max:255', Rule::unique('rooms')->ignore($room->id)->where('property_id', $room->property_id)],
+                'description' => ['nullable', 'string'],
+                'rent'        => ['required', 'numeric', 'min:0'],
+                'capacity'    => ['required', 'integer', 'min:1'],
+            ]);
+
+            // Add the 'is_available' status based on whether the checkbox was checked
+            $validated['is_available'] = $request->has('is_available');
+
+            // UPDATE: Save the changes to the database.
+            $room->update($validated);
+
+            // REDIRECT: Go back with a success message.
+            return redirect()->route('agent.dashboard')->with('success', 'Room details updated successfully!')->with('active_section', 'rooms');
+        }
 }
 
 

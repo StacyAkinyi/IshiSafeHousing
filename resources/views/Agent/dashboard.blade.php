@@ -403,12 +403,43 @@
 
             <!-- Reviews Section -->
             <div id="reviews" class="content-section hidden">
-                 <h2 class="text-3xl font-semibold text-slate-700 mb-6">Recent Reviews</h2>
-                 <div class="bg-white rounded-xl shadow-md p-4">
-                    <!-- Placeholder for reviews on agent's properties -->
-                    <p class="text-slate-600">This section will show recent reviews and ratings submitted by students for the properties and rooms you manage.</p>
-                 </div>
+    <h2 class="text-3xl font-semibold text-slate-700 mb-6">Room Reviews</h2>
+
+    <div class="space-y-8">
+        {{-- Outer loop: Iterate through each ROOM that has reviews --}}
+        @forelse ($roomsWithReviews as $room)
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="border-b pb-3 mb-4">
+                    <h3 class="text-xl font-bold text-slate-800">Room #{{ $room->room_number }}</h3>
+                    <p class="text-sm text-slate-500">In Property: {{ $room->property->name }}</p>
+                </div>
+                
+                <div class="space-y-4">
+                    {{-- Inner loop: Iterate through each REVIEW for the current room --}}
+                    @foreach ($room->reviews as $review)
+                        <div class="p-4 bg-slate-50 rounded-lg">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="font-semibold text-slate-700">{{ $review->booking->student->user->name ?? 'A Student' }}</p>
+                                    <p class="text-xs text-slate-500">{{ $review->created_at->format('M d, Y') }}</p>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="font-bold text-slate-800 mr-1">{{ $review->rating }}</span>
+                                    <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                </div>
+                            </div>
+                            <p class="text-slate-600 italic mt-2">"{{ $review->description }}"</p>
+                        </div>
+                    @endforeach
+                </div>
             </div>
+        @empty
+            <div class="bg-white rounded-xl shadow-md p-6 text-center">
+                <p class="text-slate-500">You have no reviews for any of your rooms yet.</p>
+            </div>
+        @endforelse
+    </div>
+</div>
 
            
 
