@@ -59,3 +59,18 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+# Student Housing Platform
+
+A web-based platform to help university students find safe and verified accommodation near campus. Built with PHP, MySQL, HTML/CSS, and Bootstrap.
+
+## Features
+- User registration/login
+- Listings for landlords/agents
+- Booking requests and approvals
+- Admin management panel
+- Listings of reviews by previous students
+
+## Contributors
+- Latifah Jaafar (UI feedback, usability testing, documentation, frontend design assistance)
+- Stacy Akinyi (Backend implementation, database management)
