@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // The student making the appointment
-            $table->foreignId('property_id')->constrained()->onDelete('cascade'); // The property to be viewed
-            $table->dateTime('booking_date');
+            $table->foreignId('student_id')->constrained()->onDelete('cascade'); // The student making the appointment
+            $table->foreignId('room_id')->constrained()->onDelete('cascade'); // The property to be viewed
+            $table->date('start_date');
+            $table->date('end_date');
             $table->enum('status', ['pending', 'confirmed', 'cancelled', 'completed'])->default('pending');
             $table->timestamps();
         });

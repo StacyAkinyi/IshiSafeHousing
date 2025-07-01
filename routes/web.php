@@ -6,6 +6,10 @@ use App\Http\Controllers\AgentController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\Student\AccountController;
+use App\Http\Controllers\PropertyController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\HomeController;
 
 
 
@@ -22,10 +26,8 @@ use App\Http\Controllers\Student\AccountController;
 
 // --- GUEST ROUTES ---
 // Accessible to everyone.
-Route::get('/', function () {
-    return view('welcome');
-});
 
+Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
 // --- AUTHENTICATED ROUTES ---
 
@@ -40,7 +42,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users', [AdminController::class, 'destroy'])->name('users.destroy');
     Route::get('/properties', [AdminController::class, 'manageProperties'])->name('properties');
     Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
-    
+    Route::delete('/bookings/{booking}', [AdminController::class, 'destroyBooking'])->name('bookings.destroy');
+    Route::delete('/reviews/{review}', [AdminController::class, 'destroyReview'])->name('reviews.destroy');
+    Route::get('/properties/{property}/rooms', [AdminController::class, 'getPropertyRooms'])->name('properties.getRooms');
     });
 
 
@@ -49,6 +53,9 @@ Route::middleware(['auth'])->prefix('agent')->name('agent.')->group(function () 
    Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
    Route::get('/properties/{property}/rooms/create', [RoomController::class, 'create'])->name('rooms.create');
    Route::post('/rooms', [RoomController::class, 'store'])->name('rooms.store');
+   Route::patch('/bookings/{booking}/status', [BookingController::class, 'updateStatus'])->name('bookings.updateStatus');
+   Route::patch('/account', [AgentController::class, 'updateAccount'])->name('account.update');
+   Route::patch('/rooms/{room}', [RoomController::class, 'update'])->name('rooms.update');
 });
 
 Route::middleware(['auth'])->prefix('student')->name('student.')->group(function () {
@@ -57,10 +64,12 @@ Route::middleware(['auth'])->prefix('student')->name('student.')->group(function
     Route::put('/account', [StudentController::class, 'update'])->name('account.update');
      Route::post('/account/update-details', [StudentController::class, 'updateDetails'])
          ->name('account.updateDetails');
-
     // This route handles the next of kin form submission
     Route::post('/account/update-next-of-kin', [StudentController::class, 'updateNextOfKin'])
          ->name('account.updateNextOfKin');
+    Route::get('/properties/{property}/rooms', [PropertyController::class, 'getRooms'])->name('properties.rooms');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 });
 
 
@@ -71,4 +80,7 @@ Route::middleware(['auth'])->group(function () {
         return view('dashboard');
     })->name('dashboard');
 });
+
+Route::get('/properties/search', [PropertyController::class, 'search'])->name('properties.search');
+Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
 

@@ -10,6 +10,7 @@ use App\Models\Review;
 use App\Models\NextOfKin;
 use App\Models\Student; 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -25,29 +26,59 @@ class StudentController extends Controller
         $student->load('nextOfKin', 'user');
 
         // Fetch all properties with available rooms to show to the student
-        $availableProperties = Property::whereHas('rooms', function ($query) {
+        $availableProperties = Property::query()
+        ->whereNotNull('latitude') 
+        ->whereNotNull('longitude')
+        // We still count available rooms for the display text
+        ->withCount(['rooms' => function ($query) {
             $query->where('is_available', true);
-        })->withCount(['rooms' => function ($query) {
-            $query->where('is_available', true);
-        }])->latest()->get();
+        }])
         
+        // This subquery will correctly calculate the total number of reviews
+        ->selectSub(function ($query) {
+            $query->from('reviews')
+                ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+                ->join('rooms', 'bookings.room_id', '=', 'rooms.id')
+                ->whereColumn('rooms.property_id', 'properties.id')
+                ->selectRaw('count(*)');
+        }, 'reviews_count')
+
+        // This subquery will correctly calculate the average rating
+        ->selectSub(function ($query) {
+            $query->from('reviews')
+                ->join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+                ->join('rooms', 'bookings.room_id', '=', 'rooms.id')
+                ->whereColumn('rooms.property_id', 'properties.id')
+                ->selectRaw('avg(rating)');
+        }, 'reviews_avg_rating')
+
+        // This part remains the same
+        ->having('rooms_count', '>', 0)
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+
         // Fetch only the bookings belonging to this student
-        $myBookings = Booking::where('user_id', $student->id)
-                             ->with('property', 'room') // Eager load relationships
-                             ->latest()
-                             ->get();
+        $myBookings = $student->bookings()->with('room.property')->latest()->get();
+
+        $reviewableBookings = Booking::where('student_id', $student->id)
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->whereDoesntHave('review')
+            ->with('room.property')
+            ->latest()
+            ->get();
         
         // Fetch only the reviews written by this student
-        $myReviews = Review::where('user_id', $student->id)
-                           ->with('property') // Eager load relationships
-                           ->latest()
-                           ->get();
+       $myReviews = Review::whereHas('booking', function ($query) use ($student) {
+                    $query->where('student_id', $student->id);
+                })->with('booking.room.property')->latest()->get();
 
         // Pass the data to the view
         return view('student.dashboard', [
             'student'            => $student,
             'availableProperties' => $availableProperties,
             'myBookings'          => $myBookings,
+            'reviewableBookings'  => $reviewableBookings,
             'myReviews'           => $myReviews,
         ]);
     }
@@ -87,8 +118,10 @@ class StudentController extends Controller
         $validatedData = $request->validate([
             'kin_name' => ['required', 'string', 'max:255'],
             'kin_relationship' => ['required', 'string', 'max:255'],
+            'kin_id_number' => ['nullable', 'string', 'max:255'],
             'kin_phone_number' => ['required', 'string', 'max:20'],
             'kin_email' => ['nullable', 'string', 'email', 'max:255'],
+             
         ]);
 
         $nextOfKin = $student->nextOfKin()->updateOrCreate(
@@ -96,8 +129,10 @@ class StudentController extends Controller
             [
                 'name' => $validatedData['kin_name'],
                 'relationship' => $validatedData['kin_relationship'],
+                'id_number' => $validatedData['kin_id_number'],
                 'phone_number' => $validatedData['kin_phone_number'],
                 'email' => $validatedData['kin_email'],
+
             ]
         );
 
