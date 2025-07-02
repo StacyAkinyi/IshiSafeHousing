@@ -608,13 +608,29 @@
                         roomDiv.className = 'p-4 border rounded-lg';
                         const rentValue = parseFloat(room.rent);
                         const displayRent = !isNaN(rentValue) ? `KES ${rentValue.toLocaleString()}/month` : 'N/A';
-                        const mainImage = (room.images && room.images.length > 0) ? `/storage/${room.images[0].path}` : 'https://via.placeholder.com/300x200.png?text=No+Image';
+                        const imagePaths = room.images.map(img => `${storageUrl}${img.path}`);
+                        const mainImage = imagePaths.length > 0 ? imagePaths[0] : 'path/to/default-image.jpg';
                         const agentName = room.agent?.user?.name || 'Not specified';
                         const agentPhone = room.agent?.phone_number || 'Not available';
 
                         roomDiv.innerHTML = `
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="room-gallery-container md:col-span-1 relative">
                                 <div class="md:col-span-1"><img src="${mainImage}" alt="Room Image" class="w-full h-40 object-cover rounded-md border"></div>
+                                <div class="image-data hidden" 
+                                        data-images='${JSON.stringify(imagePaths)}' 
+                                        data-current-index="0">
+                                    </div>
+
+                                    ${imagePaths.length > 1 ? `
+                                        <button class="gallery-arrow prev-btn absolute top-1/2 left-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75 focus:outline-none">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                        </button>
+                                        <button class="gallery-arrow next-btn absolute top-1/2 right-2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-75 focus:outline-none">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                        </button>
+                                    ` : ''}
+                                </div>
                                 <div class="md:col-span-2 flex flex-col">
                                     <div class="flex justify-between items-start mb-2">
                                         <h5 class="text-lg font-bold text-slate-800">Room #${room.room_number}</h5>
@@ -647,6 +663,36 @@
                 console.error('Fetch error:', error);
             }
         }
+        document.addEventListener('click', function(event) {
+            const target = event.target.closest('.gallery-arrow');
+
+            if (!target) {
+                return; // Exit if the click was not on an arrow
+            }
+
+            const galleryContainer = target.closest('.room-gallery-container');
+            const imageElement = galleryContainer.querySelector('.room-image');
+            const dataElement = galleryContainer.querySelector('.image-data');
+            
+            const images = JSON.parse(dataElement.dataset.images);
+            let currentIndex = parseInt(dataElement.dataset.currentIndex, 10);
+            const totalImages = images.length;
+
+            if (totalImages <= 1) {
+                return; // No need to cycle if there's only one image
+            }
+
+            // Determine if the "next" or "previous" button was clicked
+            if (target.classList.contains('next-btn')) {
+                currentIndex = (currentIndex + 1) % totalImages;
+            } else if (target.classList.contains('prev-btn')) {
+                currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+            }
+
+            // Update the image source and the current index
+            imageElement.src = images[currentIndex];
+            dataElement.dataset.currentIndex = currentIndex;
+        });
         
         function attachBookButtonListeners() { 
             document.querySelectorAll('.book-room-btn').forEach(button => {

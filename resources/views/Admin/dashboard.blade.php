@@ -260,8 +260,23 @@
                         </button>
                     </td>
                     <td class="p-4 space-x-2">
-                        <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</button>
-                        <button class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
+                        <button type="button" 
+                            class="edit-property-btn text-blue-600 hover:text-blue-800 text-sm font-semibold"
+                            data-id="{{ $property->id }}"
+                            data-name="{{ $property->name }}"
+                            data-type="{{ $property->type }}"
+                            data-address="{{ $property->address }}"
+                            data-city="{{ $property->city }}"
+                            data-description="{{ $property->description }}"
+                            data-status="{{ $property->status }}"
+                            data-action="{{ route('admin.properties.update', $property->id) }}">
+                            Edit
+                        </button>
+                        <form action="{{ route('admin.properties.destroy', $property->id) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
+                        </form>
                     </td>
                 </tr>
             @empty
@@ -283,6 +298,76 @@
                             </div>
                     </div>
                 </div>
+
+                <div id="editPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h2 class="text-2xl font-semibold">Edit Property</h2>
+            <button onclick="closeEditPropModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+        </div>
+
+        {{-- The action will be set dynamically by JavaScript --}}
+        <form id="editPropertyForm" method="POST" class="p-6">
+            @csrf
+            @method('PUT') {{-- Important for updates --}}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <label for="edit_prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
+                    <input type="text" name="name" id="edit_prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="edit_prop_type" class="block text-sm font-medium text-slate-700">Type</label>
+                    <select name="type" id="edit_prop_type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Hostel">Hostel</option>
+                        <option value="Studio">Studio</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_prop_address" class="block text-sm font-medium text-slate-700">Address</label>
+                    <input type="text" name="address" id="edit_prop_address" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="edit_prop_city" class="block text-sm font-medium text-slate-700">City</label>
+                    <input type="text" name="city" id="edit_prop_city" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="edit_prop_description" class="block text-sm font-medium text-slate-700">Description</label>
+                    <textarea name="description" id="edit_prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                </div>
+                <div>
+                    <label for="edit_prop_status" class="block text-sm font-medium text-slate-700">Status</label>
+                    <select name="status" id="edit_prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="available">Available</option>
+                        <option value="full">Full</option>
+                        <option value="under_maintenance">Under Maintenance</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
+                    <input type="text" name="latitude" id="edit_prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div>
+                    <label for="edit_prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
+                    <input type="text" name="longitude" id="edit_prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+            
+            <div class="flex justify-end items-center pt-6 mt-4 border-t">
+                <button type="button" onclick="closeEditPropModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-200">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
                 <div id="addPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
                 <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
                     <div class="flex justify-between items-center p-6 border-b">
@@ -1036,7 +1121,34 @@
     function closePropModal() {
         document.getElementById('addPropertyModal').classList.add('hidden');
     }
-    
+    const editModal = document.getElementById('editPropertyModal');
+    const editForm = document.getElementById('editPropertyForm');
+    const editButtons = document.querySelectorAll('.edit-property-btn');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const property = this.dataset;
+
+            // Set the form's action to the correct update route
+            editForm.action = property.action;
+
+            // Fill all the form fields with the property's data
+            document.getElementById('edit_prop_name').value = property.name;
+            document.getElementById('edit_prop_type').value = property.type;
+            document.getElementById('edit_prop_address').value = property.address;
+            document.getElementById('edit_prop_city').value = property.city;
+            document.getElementById('edit_prop_description').value = property.description;
+            document.getElementById('edit_prop_status').value = property.status;
+
+            // Show the modal
+            editModal.classList.remove('hidden');
+        });
+    });
+
+    // Function to close the modal
+    function closeEditPropModal() {
+        editModal.classList.add('hidden');
+    }
 
     </script>
 </body>

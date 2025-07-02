@@ -22,6 +22,7 @@ class Property extends Model
         'address',
         'city',
         'description',
+        'image',
         'status',
         'latitude',
         'longitude',

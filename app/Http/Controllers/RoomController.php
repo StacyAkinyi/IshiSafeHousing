@@ -19,7 +19,7 @@ class RoomController extends Controller
                 'property_id' => ['required', 'exists:properties,id'],
                 'room_number' => ['nullable', 'string', 'max:255', Rule::unique('rooms')->where('property_id', $request->property_id)],
                 'description' => ['nullable', 'string'],
-                'rent'        => ['required', 'numeric', 'min:0'],
+                'rent'        => ['required', 'integer', 'min:0'],
                 'capacity'    => ['required', 'integer', 'min:1'],
                 'images'      => ['nullable', 'array'], 
                 'images.*'    => ['image', 'mimes:jpeg,png,jpg,webp', 'max:2048'], 

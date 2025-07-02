@@ -299,7 +299,7 @@
                     <tr class="border-b hover:bg-slate-50 transition">
                         <td class="p-4 text-slate-800 font-medium">{{ $room->room_number }}</td>
                         <td class="p-4 text-slate-600">{{ $room->property->name ?? 'N/A' }}</td>
-                        <td class="p-4 text-slate-600">{{ number_format($room->rent, 2) }}</td>
+                        <td class="p-4 text-slate-600">{{ number_format($room->rent) }}</td>
                         <td class="p-4 text-slate-600">{{ $room->capacity }} person(s)</td>
                         <td class="p-4">
                             <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
@@ -330,7 +330,7 @@
                         </div>
                         <div class="md:col-span-1">
                             <label for="rent-{{$room->id}}" class="block text-sm font-medium text-slate-700">Monthly Rent: Kshs</label>
-                            <input type="number" name="rent" id="rent-{{$room->id}}" value="{{ old('rent', $room->rent) }}" step="0.01" class="mt-1 block w-full ...">
+                            <input type="number" name="rent" id="rent-{{$room->id}}" value="{{ old('rent', $room->rent) }}" step="1" class="mt-1 block w-full ...">
                         </div>
                         <div class="md:col-span-1">
                             <label for="capacity-{{$room->id}}" class="block text-sm font-medium text-slate-700">Capacity (Persons)</label>
@@ -402,7 +402,7 @@
 
                 <div>
                     <label for="rent" class="block text-sm font-medium text-slate-700">Monthly Rent: Kshs</label>
-                    <input type="number" name="rent" id="rent" value="{{ old('rent') }}" step="0.01" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">
+                    <input type="number" name="rent" id="rent" value="{{ old('rent') }}" step="1" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm">
                 </div>
 
                 <div>
@@ -422,19 +422,18 @@
                     </label>
                 </div>
                 <div class="md:col-span-2">
-        <label for="images" class="block text-sm font-medium text-slate-700">Room Images</label>
-        <input type="file" name="images[]" id="images" multiple class="mt-1 block w-full text-sm text-slate-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-full file:border-0
-            file:text-sm file:font-semibold
-            file:bg-indigo-50 file:text-indigo-700
-            hover:file:bg-indigo-100
-        "/>
-        <p class="mt-1 text-xs text-gray-500">You can select multiple images.</p>
-        @error('images.*')
-            <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
-        @enderror
-    </div>
+                    <label for="images" class="block text-sm font-medium text-slate-700">Room Images</label>
+                    <input type="file" name="images[]" id="images" multiple class="mt-1 block w-full text-sm text-slate-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-indigo-50 file:text-indigo-700
+                        hover:file:bg-indigo-100" />
+                    <p class="mt-1 text-xs text-gray-500">You can select multiple images.</p>
+                    @error('images.*')
+                        <p class="text-sm text-red-600 mt-2">{{ $message }}</p>
+                    @enderror
+                </div>
 
             </div>
             
@@ -506,7 +505,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const contentSections = document.querySelectorAll('.content-section');
     const modalTriggers = document.querySelectorAll('[data-modal-target]');
     const modalHides = document.querySelectorAll('[data-modal-hide]');
-
+    const addRoomModal = document.getElementById('addRoomModal');
     // Data from Laravel for the charts
     const roomsByPropertyData = @json($roomsByProperty);
     const bookingsByPropertyData = @json($bookingsByProperty);
@@ -524,6 +523,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const targetSection = document.getElementById(targetId);
         if (targetSection) targetSection.classList.remove('hidden');
     }
+
+     
 
     function setActiveLink(targetId) {
         sidebarLinks.forEach(link => link.classList.remove('active'));
@@ -632,6 +633,18 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 });
+function openRoomModal() {
+        if (addRoomModal) {
+            addRoomModal.classList.remove('hidden');
+        }
+    }
+
+    // A function to close the modal
+    function closeRoomModal() {
+        if (addRoomModal) {
+            addRoomModal.classList.add('hidden');
+        }
+    }
 </script>
 
 </body>

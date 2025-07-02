@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('agent_id')->constrained(table: 'users', indexName: 'rooms_agent_id')->onDelete('cascade');
             $table->string('room_number')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('rent', 8, 2);
+            $table->unsignedInteger('rent');
             $table->integer('capacity')->default(1);
             $table->boolean('is_available')->default(true);
             $table->string('image')->nullable(); // Assuming you want to store an image path

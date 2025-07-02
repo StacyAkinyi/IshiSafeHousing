@@ -42,6 +42,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users', [AdminController::class, 'destroy'])->name('users.destroy');
     Route::get('/properties', [AdminController::class, 'manageProperties'])->name('properties');
     Route::post('/properties', [AdminController::class, 'storeProperty'])->name('properties.store');
+    Route::get('/properties/{property}/edit', [AdminController::class, 'editProperty'])->name('properties.edit');
+    Route::put('/properties/{property}', [AdminController::class, 'updateProperty'])->name('properties.update');
+    Route::delete('/properties/{property}', [AdminController::class, 'deleteProperty'])->name('properties.destroy');
     Route::delete('/bookings/{booking}', [AdminController::class, 'destroyBooking'])->name('bookings.destroy');
     Route::delete('/reviews/{review}', [AdminController::class, 'destroyReview'])->name('reviews.destroy');
     Route::get('/properties/{property}/rooms', [AdminController::class, 'getPropertyRooms'])->name('properties.getRooms');

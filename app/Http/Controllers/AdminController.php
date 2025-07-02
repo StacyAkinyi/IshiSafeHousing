@@ -186,7 +186,7 @@ class AdminController extends Controller
     public function manageProperties()
     {
         $properties = Property::all(); // Fetch all properties from the database
-        return view('admin.properties', ['properties' => $properties]);
+        return view('admin.dashboard', ['properties' => $properties]);
     }
     public function storeProperty(Request $request)
     {
@@ -218,6 +218,43 @@ class AdminController extends Controller
         // Redirect back to the property management page with a success message
         return redirect()->route('admin.dashboard')->with('success', 'Property created successfully.');
     }
+    public function editProperty(Property $property)
+    {
+        
+    
+    }
+    public function updateProperty(Request $request, Property $property)
+    {
+        // 1. Validate the incoming data
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'type' => 'required|string|in:Apartment,House,Hostel,Studio',
+            'address' => 'required|string|max:255',
+            'city' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'status' => 'required|string|in:available,full,under_maintenance',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
+        ]);
+
+        // 2. Update the property with the validated data
+        $property->update($validatedData);
+
+        // 3. Redirect back to the properties list with a success message
+        return redirect()->route('admin.properties')
+                         ->with('success', 'Property updated successfully.');
+    }
+    public function deleteProperty(Property $property)
+    {
+        // Laravel automatically finds the property. We just delete it.
+        $property->delete();
+
+        // Redirect back to the properties list with a success message
+        return redirect()->route('admin.properties')
+                         ->with('success', 'Property deleted successfully.');
+    }
+
+
     public function destroyBooking(Booking $booking)
         {
             $booking->delete();

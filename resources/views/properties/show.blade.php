@@ -26,13 +26,34 @@
                         <tr class="border-b hover:bg-slate-50">
                             <td class="p-4 align-top">
                                 @php
-                                    $imagePath = $room->images->first()->path ?? null;
+                                    // Get all image paths for the current room
+                                    $imagePaths = $room->images->pluck('path')->toArray();
                                 @endphp
-                                @if($imagePath)
-                                    <img src="{{ asset('storage/' . $imagePath) }}" alt="Room Image" class="w-40 h-28 object-cover rounded-md">
-                                @else
-                                    <div class="w-40 h-28 bg-gray-200 rounded-md flex items-center justify-center text-xs text-gray-400">No Image</div>
-                                @endif
+
+                                {{-- Image Gallery Container --}}
+                                <div class="room-gallery-container relative w-40 h-28" 
+                                    data-images="{{ json_encode($imagePaths) }}" 
+                                    data-current-index="0">
+
+                                    @if (!empty($imagePaths))
+                                        {{-- Main Image Display --}}
+                                        <img src="{{ asset('storage/' . $imagePaths[0]) }}" alt="Room Image" class="room-image w-full h-full object-cover rounded-md">
+
+                                        {{-- Arrows - only show if there is more than 1 image --}}
+                                        @if (count($imagePaths) > 1)
+                                            <button class="gallery-arrow prev-btn absolute top-1/2 left-1 transform -translate-y-1/2 bg-black bg-opacity-40 text-white rounded-full p-1 hover:bg-opacity-60">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+                                            </button>
+                                            <button class="gallery-arrow next-btn absolute top-1/2 right-1 transform -translate-y-1/2 bg-black bg-opacity-40 text-white rounded-full p-1 hover:bg-opacity-60">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+                                            </button>
+                                        @endif
+
+                                    @else
+                                        {{-- Placeholder for when there are no images --}}
+                                        <div class="w-full h-full bg-slate-200 rounded-md flex items-center justify-center text-xs text-slate-400">No Image</div>
+                                    @endif
+                                </div>
                             </td>
                             <td class="p-4 align-top">
                                 <p class="font-bold text-base text-slate-800">Room #{{ $room->room_number }}</p>
@@ -57,4 +78,33 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('click', function(event) {
+    const target = event.target.closest('.gallery-arrow');
+
+    if (!target) {
+        return; // Exit if the click wasn't on a gallery arrow
+    }
+
+    const galleryContainer = target.closest('.room-gallery-container');
+    const imageElement = galleryContainer.querySelector('.room-image');
+    
+    // Get image data from the container's data attributes
+    const images = JSON.parse(galleryContainer.dataset.images);
+    let currentIndex = parseInt(galleryContainer.dataset.currentIndex, 10);
+    const totalImages = images.length;
+
+    // Determine direction and update the index
+    if (target.classList.contains('next-btn')) {
+        currentIndex = (currentIndex + 1) % totalImages;
+    } else if (target.classList.contains('prev-btn')) {
+        currentIndex = (currentIndex - 1 + totalImages) % totalImages;
+    }
+
+    // Update the image source and the data attribute
+    imageElement.src = `{{ asset('storage') }}/${images[currentIndex]}`;
+    galleryContainer.dataset.currentIndex = currentIndex;
+});
+</script>
 @endsection
