@@ -84,6 +84,8 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/properties/search', [PropertyController::class, 'search'])->name('properties.search');
+Route::get('/properties/search', [PropertyController::class, 'search'])->name('properties.index');
 Route::get('/properties/{property}', [PropertyController::class, 'show'])->name('properties.show');
+Route::get('/properties/{property}/reviews', [PropertyController::class, 'reviews'])->name('properties.reviews');
+Route::get('/properties/search', [PropertyController::class, 'search'])->name('properties.search');
 

@@ -221,7 +221,16 @@
             <div id="propertyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse ($availableProperties as $property)
                     <div class="property-card bg-white rounded-xl shadow-md overflow-hidden" data-city="{{ strtolower($property->city) }}">
-                        <div class="h-40 bg-gray-200"></div> <div class="p-4 flex flex-col">
+                        
+                                  @if($property->image)
+                                        <img src="{{ asset('storage/' . $property->image) }}" alt="{{ $property->name }}" class="w-full h-40 object-cover">
+                                    @else
+                                        {{-- Fallback placeholder if no image is set --}}
+                                        <div class="w-full h-40 bg-slate-200 flex items-center justify-center">
+                                            <span class="text-slate-400 text-xs">No Image</span>
+                                        </div>
+                                    @endif
+                         <div class="p-4 flex flex-col">
                             <div class="flex-grow">
                                 <h3 class="font-semibold text-lg">{{ $property->name }}</h3>
                                 <p class="text-sm text-slate-600">{{ $property->city }}</p>
@@ -423,6 +432,7 @@
     </footer>
 
 <script>
+    const storageUrl = "{{ asset('storage/') }}"; 
      function initStudentMap() {
         const mapTabLink = document.querySelector('.sidebar-link[data-target="maps"]');
         const mapContainer = document.getElementById("student-map");
@@ -608,7 +618,7 @@
                         roomDiv.className = 'p-4 border rounded-lg';
                         const rentValue = parseFloat(room.rent);
                         const displayRent = !isNaN(rentValue) ? `KES ${rentValue.toLocaleString()}/month` : 'N/A';
-                        const imagePaths = room.images.map(img => `${storageUrl}${img.path}`);
+                        const imagePaths = room.images.map(img => `${storageUrl}/${img.path}`);
                         const mainImage = imagePaths.length > 0 ? imagePaths[0] : 'path/to/default-image.jpg';
                         const agentName = room.agent?.user?.name || 'Not specified';
                         const agentPhone = room.agent?.phone_number || 'Not available';
@@ -616,7 +626,7 @@
                         roomDiv.innerHTML = `
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="room-gallery-container md:col-span-1 relative">
-                                <div class="md:col-span-1"><img src="${mainImage}" alt="Room Image" class="w-full h-40 object-cover rounded-md border"></div>
+                                <div class="md:col-span-1"><img src="${mainImage}" alt="Room Image" class="room-image w-full h-40 object-cover rounded-md border"></div>
                                 <div class="image-data hidden" 
                                         data-images='${JSON.stringify(imagePaths)}' 
                                         data-current-index="0">

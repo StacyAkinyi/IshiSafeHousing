@@ -200,94 +200,246 @@
                             </div>
                 </div>
             </div>
-            
-    
 
             <!-- Properties Section -->
-            <div id="properties" class="content-section hidden">
-                 <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-3xl font-semibold text-slate-800">Manage Properties</h1>
-                    <button onclick="openPropModal()" class="bg-indigo-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-600 transition duration-200 shadow-sm flex items-center">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                        Add Property
-                    </button>
-                </div>
-                @if ($errors->any())
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
-                        <strong class="font-bold">Please fix the following errors:</strong>
-                        <ul class="mt-2 list-disc list-inside text-sm">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+<div id="properties" class="content-section">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-semibold text-slate-800">Manage Properties</h1>
+        <button onclick="openPropModal()" class="bg-indigo-500 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-600 transition duration-200 shadow-sm flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+            Add Property
+        </button>
+    </div>
+    @if ($errors->any())
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md" role="alert">
+            <strong class="font-bold">Please fix the following errors:</strong>
+            <ul class="mt-2 list-disc list-inside text-sm">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-              <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <table class="min-w-full text-left">
-                <thead class="bg-slate-50 border-b">
-            <tr>
-                <th class="p-4 text-sm font-semibold text-slate-600">ID</th>
-                <th class="p-4 text-sm font-semibold text-slate-600">Property Name</th>
-                <th class="p-4 text-sm font-semibold text-slate-600">Type</th>
-                <th class="p-4 text-sm font-semibold text-slate-600">City</th>
-                <th class="p-4 text-sm font-semibold text-slate-600">Status</th>
-                <th class="p-4 text-sm font-semibold text-slate-600 text-center">Rooms</th>
-                <th class="p-4 text-sm font-semibold text-slate-600">Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($properties as $property)
-                <tr class="border-b hover:bg-slate-50 transition">
-                    <td class="p-4 text-slate-800">{{ $property->id }}</td>
-                    <td class="p-4 text-slate-800 font-medium">{{ $property->name }}</td>
-                    <td class="p-4 text-slate-600">{{ $property->type }}</td>
-                    <td class="p-4 text-slate-600">{{ $property->city }}</td>
-                    <td class="p-4">
-                        <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
-                            @if($property->status == 'Available') bg-green-200 text-green-800
-                            @elseif($property->status == 'Full') bg-yellow-200 text-yellow-800
-                            @elseif($property->status == 'Under Maintenance') bg-red-200 text-red-800
-                            @else bg-red-200 text-red-800 @endif">
-                            {{ $property->status }}
-                        </span>
-                    </td>
-                    <td class="p-4 text-center">
-                        <button type="button" 
-                                data-property-id="{{ $property->id }}" 
-                                class="view-rooms-btn text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
-                            View ({{ $property->rooms_count }})
-                        </button>
-                    </td>
-                    <td class="p-4 space-x-2">
-                        <button type="button" 
-                            class="edit-property-btn text-blue-600 hover:text-blue-800 text-sm font-semibold"
-                            data-id="{{ $property->id }}"
-                            data-name="{{ $property->name }}"
-                            data-type="{{ $property->type }}"
-                            data-address="{{ $property->address }}"
-                            data-city="{{ $property->city }}"
-                            data-description="{{ $property->description }}"
-                            data-status="{{ $property->status }}"
-                            data-action="{{ route('admin.properties.update', $property->id) }}">
-                            Edit
-                        </button>
-                        <form action="{{ route('admin.properties.destroy', $property->id) }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
+    <div class="bg-white rounded-xl shadow-md overflow-hidden ">
+        <table class="min-w-full text-left">
+            <thead class="bg-slate-50 border-b">
                 <tr>
-                    <td colspan="6" class="p-4 text-center text-slate-500">No properties found.</td>
+                    <th class="p-4 text-sm font-semibold text-slate-600">ID</th>
+                    
+                    <th class="p-4 text-sm font-semibold text-slate-600">Property Name</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Type</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">City</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Status</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600 text-center">Rooms</th>
+                    <th class="p-4 text-sm font-semibold text-slate-600">Actions</th>
                 </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse ($properties as $property)
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-4 text-slate-800">{{ $property->id }}</td>
+                        <td class="p-4 text-slate-800 font-medium">{{ $property->name }}</td>
+                        <td class="p-4 text-slate-600">{{ $property->type }}</td>
+                        <td class="p-4 text-slate-600">{{ $property->city }}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 text-xs font-semibold rounded-full 
+                                @if($property->status == 'available') bg-green-200 text-green-800
+                                @elseif($property->status == 'full') bg-yellow-200 text-yellow-800
+                                @else bg-red-200 text-red-800 @endif">
+                                {{ ucfirst(str_replace('_', ' ', $property->status)) }}
+                            </span>
+                        </td>
+                        <td class="p-4 text-center">
+                            <button type="button" 
+                                    data-property-id="{{ $property->id }}" 
+                                    class="view-rooms-btn text-indigo-600 hover:text-indigo-800 text-sm font-semibold">
+                                View ({{ $property->rooms_count }})
+                            </button>
+                        </td>
+                        <td class="p-4 space-x-2">
+                            {{-- Updated Edit Button with data-image attribute --}}
+                            <button type="button" 
+                                class="edit-property-btn text-blue-600 hover:text-blue-800 text-sm font-semibold"
+                                data-id="{{ $property->id }}"
+                                data-name="{{ $property->name }}"
+                                data-type="{{ $property->type }}"
+                                data-address="{{ $property->address }}"
+                                data-city="{{ $property->city }}"
+                                data-description="{{ $property->description }}"
+                                data-status="{{ $property->status }}"
+                                data-latitude="{{ $property->latitude }}"
+                                data-longitude="{{ $property->longitude }}"
+                                data-image="{{ $property->image ? asset('storage/' . $property->image) : '' }}"
+                                data-action="{{ route('admin.properties.update', $property->id) }}">
+                                Edit
+                            </button>
+                            <form action="{{ route('admin.properties.destroy', $property->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this property?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-semibold">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="8" class="p-4 text-center text-slate-500">No properties found.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
+
+<!-- ======================================================= -->
+<!-- ================= ADD PROPERTY MODAL ================== -->
+<!-- ======================================================= -->
+<div id="addPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h2 class="text-2xl font-semibold">Add New Property</h2>
+            <button onclick="closePropModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+        </div>
+        {{-- Added enctype for file uploads --}}
+        <form action="{{ route('admin.properties.store') }}" method="POST" class="p-6 flex-1 overflow-y-auto" enctype="multipart/form-data">
+            @csrf
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <label for="prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
+                    <input type="text" name="name" id="prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="prop_type" class="block text-sm font-medium text-slate-700">Type</label>
+                    <select name="type" id="type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                        <option value="" disabled selected>Select a property type...</option>
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Hostel">Hostel</option>
+                        <option value="Studio">Studio</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="prop_address" class="block text-sm font-medium text-slate-700">Address</label>
+                    <input type="text" name="address" id="prop_address" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="prop_city" class="block text-sm font-medium text-slate-700">City</label>
+                    <input type="text" name="city" id="prop_city" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="prop_description" class="block text-sm font-medium text-slate-700">Description</label>
+                    <textarea name="description" id="prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"></textarea>
+                </div>
+                {{-- Added Image Input Field --}}
+                <div class="md:col-span-2">
+                    <label for="prop_image" class="block text-sm font-medium text-slate-700">Featured Image</label>
+                    <input type="file" name="image" id="prop_image" class="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+                <div>
+                    <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
+                    <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm">
+                        <option value="available">Available</option>
+                        <option value="full">Full</option>
+                        <option value="under_maintenance">Under Maintenance</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
+                    <input type="text" name="latitude" id="prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
+                    <input type="text" name="longitude" id="prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+            </div>
+            <div class="flex justify-end items-center pt-6 mt-4 border-t">
+                <button type="button" onclick="closePropModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 mr-2 border">Cancel</button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700">Save Property</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- ================ EDIT PROPERTY MODAL ================== -->
+<!-- ======================================================= -->
+<div id="editPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh]">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h2 class="text-2xl font-semibold">Edit Property</h2>
+            <button onclick="closeEditPropModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
+        </div>
+        {{-- Added enctype for file uploads --}}
+        <form id="editPropertyForm" method="POST" class="p-6 flex-1 overflow-y-auto" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div>
+                    <label for="edit_prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
+                    <input type="text" name="name" id="edit_prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="edit_prop_type" class="block text-sm font-medium text-slate-700">Type</label>
+                    <select name="type" id="edit_prop_type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Hostel">Hostel</option>
+                        <option value="Studio">Studio</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_prop_address" class="block text-sm font-medium text-slate-700">Address</label>
+                    <input type="text" name="address" id="edit_prop_address" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="edit_prop_city" class="block text-sm font-medium text-slate-700">City</label>
+                    <input type="text" name="city" id="edit_prop_city" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="edit_prop_description" class="block text-sm font-medium text-slate-700">Description</label>
+                    <textarea name="description" id="edit_prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm"></textarea>
+                </div>
+
+                {{-- Added Image Input Field with Preview --}}
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-slate-700">Featured Image</label>
+                    <div class="mt-2 flex items-center space-x-6">
+                        <img id="edit_image_preview" src="" alt="Current Image" class="h-20 w-20 object-cover rounded-md bg-slate-100">
+                        <div class="flex-1">
+                            <input type="file" name="image" id="edit_prop_image" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                            <p class="mt-1 text-xs text-slate-500">Upload a new image to replace the current one.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="edit_prop_status" class="block text-sm font-medium text-slate-700">Status</label>
+                    <select name="status" id="edit_prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm">
+                        <option value="available">Available</option>
+                        <option value="full">Full</option>
+                        <option value="under_maintenance">Under Maintenance</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
+                    <input type="text" name="latitude" id="edit_prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="edit_prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
+                    <input type="text" name="longitude" id="edit_prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm">
+                </div>
+            </div>
+            <div class="flex justify-end items-center pt-6 mt-4 border-t">
+                <button type="button" onclick="closeEditPropModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 mr-2 border">Cancel</button>
+                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
                 <div id="roomsListModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 p-4">
                     <div class="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh]">
                         <div class="flex justify-between items-center mb-4 border-b pb-4">
@@ -299,141 +451,7 @@
                     </div>
                 </div>
 
-                <div id="editPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
-        <div class="flex justify-between items-center p-6 border-b">
-            <h2 class="text-2xl font-semibold">Edit Property</h2>
-            <button onclick="closeEditPropModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
-        </div>
-
-        {{-- The action will be set dynamically by JavaScript --}}
-        <form id="editPropertyForm" method="POST" class="p-6">
-            @csrf
-            @method('PUT') {{-- Important for updates --}}
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div>
-                    <label for="edit_prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
-                    <input type="text" name="name" id="edit_prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label for="edit_prop_type" class="block text-sm font-medium text-slate-700">Type</label>
-                    <select name="type" id="edit_prop_type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="Apartment">Apartment</option>
-                        <option value="House">House</option>
-                        <option value="Hostel">Hostel</option>
-                        <option value="Studio">Studio</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="edit_prop_address" class="block text-sm font-medium text-slate-700">Address</label>
-                    <input type="text" name="address" id="edit_prop_address" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label for="edit_prop_city" class="block text-sm font-medium text-slate-700">City</label>
-                    <input type="text" name="city" id="edit_prop_city" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div class="md:col-span-2">
-                    <label for="edit_prop_description" class="block text-sm font-medium text-slate-700">Description</label>
-                    <textarea name="description" id="edit_prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                </div>
-                <div>
-                    <label for="edit_prop_status" class="block text-sm font-medium text-slate-700">Status</label>
-                    <select name="status" id="edit_prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="available">Available</option>
-                        <option value="full">Full</option>
-                        <option value="under_maintenance">Under Maintenance</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="edit_prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
-                    <input type="text" name="latitude" id="edit_prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label for="edit_prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
-                    <input type="text" name="longitude" id="edit_prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-            </div>
-            
-            <div class="flex justify-end items-center pt-6 mt-4 border-t">
-                <button type="button" onclick="closeEditPropModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-200">
-                    Save Changes
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-
-                <div id="addPropertyModal" class="modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden">
-                <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl">
-                    <div class="flex justify-between items-center p-6 border-b">
-                        <h2 class="text-2xl font-semibold">Add New Property</h2>
-                        <button onclick="closePropModal()" class="text-slate-400 hover:text-slate-600 text-3xl">&times;</button>
-                    </div>
-
-        <form action="{{ route('admin.properties.store') }}" method="POST" class="p-6">
-            @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div>
-                    <label for="prop_name" class="block text-sm font-medium text-slate-700">Property Name</label>
-                    <input type="text" name="name" id="prop_name" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label for="prop_type" class="block text-sm font-medium text-slate-700">Type</label>
-                    <select name="type" id="type" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="" disabled selected>Select a property type...</option>
-                        <option value="Apartment">Apartment</option>
-                        <option value="House">House</option>
-                        <option value="Hostel">Hostel</option>
-                        <option value="Studio">Studio</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="prop_address" class="block text-sm font-medium text-slate-700">Address</label>
-                    <input type="text" name="address" id="prop_address" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label for="prop_city" class="block text-sm font-medium text-slate-700">City</label>
-                    <input type="text" name="city" id="prop_city" required class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div class="md:col-span-2">
-                    <label for="prop_description" class="block text-sm font-medium text-slate-700">Description</label>
-                    <textarea name="description" id="prop_description" rows="3" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
-                </div>
-                <div>
-                    <label for="prop_status" class="block text-sm font-medium text-slate-700">Status</label>
-                    <select name="status" id="prop_status" required class="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="available">available</option>
-                        <option value="full">full</option>
-                        <option value="under_maintenance">under maintenance</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="prop_latitude" class="block text-sm font-medium text-slate-700">Latitude</label>
-                    <input type="text" name="latitude" id="prop_latitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                <div>
-                    <label for="prop_longitude" class="block text-sm font-medium text-slate-700">Longitude</label>
-                    <input type="text" name="longitude" id="prop_longitude" class="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-                 
-            </div>
-            
-            <div class="flex justify-end items-center pt-6 mt-4 border-t">
-                <button type="button" onclick="closePropModal()" class="bg-slate-100 text-slate-800 font-semibold py-2 px-5 rounded-lg hover:bg-slate-200 transition duration-200 mr-2 border border-slate-300">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-indigo-600 text-white font-semibold py-2 px-5 rounded-lg hover:bg-indigo-700 transition duration-200">
-                    Save Property
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
+                
             <!-- Bookings Section -->
             <div id="bookings" class="content-section hidden">
                 <h2 class="text-3xl font-semibold text-slate-700 mb-6">Bookings Schedule</h2>
@@ -1122,6 +1140,7 @@
         document.getElementById('addPropertyModal').classList.add('hidden');
     }
     const editModal = document.getElementById('editPropertyModal');
+    const imagePreview = document.getElementById('edit_image_preview');
     const editForm = document.getElementById('editPropertyForm');
     const editButtons = document.querySelectorAll('.edit-property-btn');
 
@@ -1140,6 +1159,13 @@
             document.getElementById('edit_prop_description').value = property.description;
             document.getElementById('edit_prop_status').value = property.status;
 
+            if (property.image) {
+                imagePreview.src = property.image;
+                imagePreview.classList.remove('hidden');
+            } else {
+                imagePreview.src = '';
+                imagePreview.classList.add('hidden');
+            }
             // Show the modal
             editModal.classList.remove('hidden');
         });

@@ -14,7 +14,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
                 @foreach ($properties as $property)
                     <div class="bg-white rounded-xl shadow-md overflow-hidden flex flex-col">
-                        <div class="h-48 bg-gray-200"></div> <div class="p-6 flex-grow flex flex-col">
+                        
+                             @if($property->image)
+                                    <img src="{{ asset('storage/' . $property->image) }}" alt="{{ $property->name }}" class="w-full h-40 object-cover">
+                                @else
+                                    {{-- Fallback placeholder if no image is set --}}
+                                    <div class="w-full h-40 bg-slate-200 flex items-center justify-center">
+                                        <span class="text-slate-400 text-xs">No Image</span>
+                                    </div>
+                                @endif
+                         <div class="p-6 flex-grow flex flex-col">
                             <h3 class="text-xl font-semibold text-gray-800">{{ $property->name }}</h3>
                             <p class="text-sm text-slate-500 mt-1">{{ $property->address }}</p>
                             <div class="flex items-center my-3">
@@ -26,7 +35,9 @@
                                     </div>
                                     <p class="text-xs text-slate-500 ml-2">
                                         {{ number_format($property->reviews_avg_rating, 1) }} 
-                                        ({{ $property->reviews_count }} {{ Str::plural('review', $property->reviews_count) }})
+                                        <a href="{{ route('properties.reviews', $property) }}" class="hover:underline">
+                                            ({{ $property->reviews_count }} {{ Str::plural('review', $property->reviews_count) }})
+                                        </a>
                                     </p>
                                 @else
                                     <p class="text-xs text-slate-500">No reviews yet</p>

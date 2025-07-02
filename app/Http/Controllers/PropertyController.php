@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
+use App\Models\Booking;
+use App\Models\Review;
+use App\Models\Room;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -71,7 +76,28 @@ class PropertyController extends Controller
 
         return view('properties.show', ['property' => $property]);
     }
-    
 
+
+    public function reviews(Property $property)
+    {
+        // Step 1: Get all the room IDs that belong to this property.
+        $roomIds = $property->rooms()->pluck('id');
+
+        // Step 2: Get all the bookings that are associated with those rooms.
+        $bookingIds = Booking::whereIn('room_id', $roomIds)->pluck('id');
+
+        // Step 3: Now, fetch all reviews that belong to those bookings.
+        // We also eager-load the user information to display the reviewer's name.
+        $reviews = Review::whereIn('booking_id', $bookingIds)
+                         ->with('booking.student.user') // Eager load for efficiency
+                         ->latest() // Show the newest reviews first
+                         ->get();
+
+        // Step 4: Return the view, passing both the property and the collection of reviews.
+        return view('properties.reviews', [
+            'property' => $property,
+            'reviews' => $reviews,
+        ]);
+    }
 
 }

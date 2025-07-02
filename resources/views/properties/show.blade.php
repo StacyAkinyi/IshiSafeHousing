@@ -3,6 +3,7 @@
 @section('content')
 <div class="bg-slate-50 py-12">
     <div class="container mx-auto px-4">
+        <a href="{{ url('/') }}" class="text-sm text-indigo-600 hover:underline">&larr; Back</a>
         <h1 class="text-4xl font-bold text-slate-800">{{ $property->name }}</h1>
         <p class="text-lg text-slate-600 mt-2">{{ $property->address }}, {{ $property->city }}</p>
         <p class="text-slate-500 mt-4">{{ $property->description }}</p>

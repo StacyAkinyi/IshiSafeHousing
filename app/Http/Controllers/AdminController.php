@@ -11,7 +11,7 @@ use App\Models\Room;
 use App\Models\NextOfKin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -185,8 +185,94 @@ class AdminController extends Controller
     }
     public function manageProperties()
     {
-        $properties = Property::all(); // Fetch all properties from the database
-        return view('admin.dashboard', ['properties' => $properties]);
+        $userCount = \App\Models\User::count();
+    $propertyCount = \App\Models\Property::count();
+    $roomCount = \App\Models\Room::count();
+    $reviewCount = \App\Models\Review::count();
+    $bookingCount = \App\Models\Booking::count();
+    $bookings = \App\Models\Booking::with(['room', 'student.user'])->latest()->take(5)->get();
+    $reviews = Review::with(['booking.room.property', 'booking.student.user'])->latest()->get();
+    $nextOfKinDetails = NextOfKin::with('student.user')->latest()->get();
+     // Users Graph: Count of 'student' vs 'agent'
+        $userRoleData = User::select('role', DB::raw('count(*) as count'))
+            ->whereIn('role', ['student', 'agent'])
+            ->groupBy('role')
+            ->get();
+
+        // Properties Graph: Number of rooms per property (Top 10)
+        $propertiesWithRoomCount = Property::withCount('rooms')
+            ->orderBy('rooms_count', 'desc')
+            ->take(10) // Take top 10 to keep the graph readable
+            ->get();
+
+        // Rooms Graph: Count of available vs. unavailable rooms
+        $roomStatusData = Room::select('is_available', DB::raw('count(*) as count'))
+            ->groupBy('is_available')
+            ->get()
+            ->map(function ($status) {
+                // Make the label more readable
+                $status->label = $status->is_available ? 'Available' : 'Unavailable';
+                return $status;
+            });
+            
+        // Reviews Graph: Number of reviews per property (Top 10)
+        $allPropertiesWithReviews = Property::whereHas('reviews')
+            ->withCount('reviews')
+            ->get();
+            
+         $reviewsByProperty = Property::whereHas('reviews')
+            ->withCount('reviews')
+            ->orderBy('reviews_count', 'desc')
+            ->take(10)
+            ->get()
+            ->map(fn($p) => ['label' => $p->name, 'value' => $p->reviews_count]);    
+
+        // Step 2: Sort the results in PHP and take the top 10.
+        $propertiesWithReviewCount = $allPropertiesWithReviews
+            ->sortByDesc('reviews_count')
+            ->take(10);
+
+        $bookingsByStatus = Booking::select('status', DB::raw('count(*) as count'))
+        ->groupBy('status')
+        ->get();
+        
+
+        // Graph 2: Get the booking count for each property (Top 10)
+        $bookingsByProperty = Property::withCount('bookings')
+            ->whereHas('bookings')
+            ->orderBy('bookings_count', 'desc')
+            ->take(10)
+            ->get()
+             ->map(fn($p) => ['label' => $p->name, 'value' => $p->bookings_count]); 
+
+    
+    // Fetch data for the tables
+    $properties = \App\Models\Property::withCount('rooms')->latest()->get();
+    $users = \App\Models\User::latest()->take(5)->get(); // Example: get latest 5 users
+
+    // Return the view with all the required data
+    return view('admin.dashboard', [
+        'userCount'     => $userCount,
+        'propertyCount' => $propertyCount,
+        'roomCount'     => $roomCount,
+        'reviewCount'   => $reviewCount,
+        'bookingCount'  => $bookingCount,
+        'properties'    => $properties,
+        'users'         => $users,
+        'bookings'      => $bookings,
+        'reviews'      => $reviews,
+        'nextOfKinDetails' => $nextOfKinDetails,
+        'userRoleData' => $userRoleData,
+        'propertiesWithRoomCount' => $propertiesWithRoomCount,
+        'roomStatusData' => $roomStatusData,
+        'propertiesWithReviewCount' => $propertiesWithReviewCount,
+        'bookingsByStatus' => $bookingsByStatus,       // <-- ADD THIS
+        'bookingsByProperty' => $bookingsByProperty,
+        'reviewsByProperty' => $reviewsByProperty,
+        'allPropertiesWithReviews' => $allPropertiesWithReviews,
+        // Add any other variables your dashboard charts might need
+    ]);
+
     }
     public function storeProperty(Request $request)
     {
@@ -198,6 +284,7 @@ class AdminController extends Controller
             'address' => ['required', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'], 
             'status' => ['required', 'string', 'in:available,full,under_maintenance'],
             'latitude' => ['required', 'numeric'],
             'longitude' => ['required', 'numeric'],
@@ -210,6 +297,7 @@ class AdminController extends Controller
             'address' => $request->address,
             'city' => $request->city,
             'description' => $request->description,
+            'image' => $request->hasFile('image') ? $request->file('image')->store('property_images', 'public') : null, // Store the image if provided
             'status' => $request->status,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
@@ -232,10 +320,21 @@ class AdminController extends Controller
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', // Optional image upload
             'status' => 'required|string|in:available,full,under_maintenance',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
         ]);
+        if ($request->hasFile('image')) {
+        // Optional: Delete the old image if it exists
+        if ($property->image) {
+            Storage::disk('public')->delete($property->image);
+        }
+
+        // Store the new image and get its path
+        $path = $request->file('image')->store('property_images', 'public');
+        $validated['image'] = $path; // Add the new path to the data to be updated
+    }
 
         // 2. Update the property with the validated data
         $property->update($validatedData);
